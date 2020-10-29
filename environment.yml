@@ -1,0 +1,8 @@
+name: thesis
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.7
+  - snakemake-minimal=5.23

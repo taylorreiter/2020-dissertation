@@ -1,0 +1,40 @@
+name: Build PDF with bookdown
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: install xelatex
+      run: sudo apt install -y texlive-xetex texlive-science
+    - uses: goanpeca/setup-miniconda@v1
+      with:
+        python-version: 3.7
+        mamba-version: "*"
+        channels: conda-forge,bioconda,defaults
+        channel-priority: true
+        activate-environment: thesis
+        environment-file: environment.yml
+    - name: Install aggiedown in R environment
+      shell: bash -l {0}
+      run: |
+          snakemake -j 1 --schedule greedy --use-conda --conda-frontend mamba install_deps
+    - name: Run pipeline
+      shell: bash -l {0}
+      run: |
+          snakemake -j 1 --schedule greedy --use-conda --conda-frontend mamba
+    - name: upload PDF to GH artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: thesis.pdf
+        path: thesis/_book/thesis.pdf
+    - name: Release
+      uses: fnkr/github-action-ghr@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+          GHR_PATH: thesis/_book/thesis.pdf
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

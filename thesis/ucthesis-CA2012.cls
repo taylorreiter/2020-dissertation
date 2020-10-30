@@ -274,9 +274,6 @@
     $\:\overline{~~~~ \mbox{\rule{0in}{0.05in} \hspace{3.25in}}}\:$ \\
     {\@othermemberB} \\
     \vskip 2em
-    $\:\overline{~~~~ \mbox{\rule{0in}{0.05in} \hspace{3.25in}}}\:$ \\
-    {\@othermemberC} \\
-    \vskip 2em
     % add additional members as needed
     Committee in Charge \par
     \@degreeyear

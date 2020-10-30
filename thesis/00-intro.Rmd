@@ -7,20 +7,19 @@
 \end{epigraphs}
 ```
 
-With the advent of affordable sequencing technologies, microbiology has undergone an information revolution including the expansion of the tree of life by sequencing of uncultivatable bacteria [@brown2015unusual; @parks2017recovery], the discovery of prokaryotic immune systems [@mojica2005intervening], and the discovery of prokaryotic genome fluidity [@tettelin2005genome; @andreani2017prokaryote].
-These revolutionary discoveries were enabled not only with next generation sequencing technologies, but also by increasingly complex sequencing analysis methods. 
+With the advent of affordable sequencing technologies, microbiology has undergone an information revolution that has led to the the expansion of the tree of life by sequencing of uncultivatable bacteria [@brown2015unusual; @parks2017recovery], the discovery of prokaryotic immune systems [@mojica2005intervening], and the discovery of prokaryotic genome fluidity [@tettelin2005genome; @andreani2017prokaryote].
+These revolutionary discoveries were enabled not only with next generation sequencing technologies, but also by increasingly sophisticated and scalable sequencing analysis methods. 
 
 Edward DeLong set out on the Research Vessel Wecoma in the fall of 1992 and filtered 30 liters of seawater off of the Oregon coast to collect concentrated bacterioplankton^[Edward DeLong, personal communication October 2020].
 He resuspended the bacterioplankton in molten agarose plugs as a way to reduce DNA sheering upon extraction, thereby ensuring very long pieces of DNA.
 He and his team then painstackingly generated the first archival library of environmental DNA by stably transfecting *Escherichia coli* cells with 3,552 fosmids containing the DNA [@stein1996characterization].
 They isolated and sequenced a 38,500 base pair fragment from an archaeal genome and used a Sun Microsystems SPARCstation10 with less than a gigabyte of RAM to complete their bioinformatic analyses.
-It was the first time a DNA fragment of that size had been sequenced from a mixed microbial community, and these efforts along with other gave rise to the eventual field of shotgun metagenomics [@handelsman1998molecular].
+It was the first time a DNA fragment of that size had been sequenced from a mixed microbial community, and these efforts along with others gave rise to the eventual field of shotgun metagenomics [@handelsman1998molecular].
 
 Then, in 2004, using the same method for DNA extraction that had been used by DeLong, Gene Tyson and colleagues used unprecedently deep sequencing (103,462 reads) to characterize a simple bacterial community from acid mine drainage [@tyson2004community].
 Anticipating computational limitations due to within-species strain variation, Tyson used permissive settings during assembly to resolve polymorphic discrepancies [@tyson2004community].
 Using GC content and average read depth across assembled sequences, the assembly was binned into five separate composite genomes in the first proof-of-concept application of metagenomic binning [@tyson2004community].
 As sequencing technology, computational infrastructure, and computational methods have matured, thousands of metagenomes containing hundreds of thousands of species have been generated from diverse ecosystems [@sunagawa2015structure; @kopf2015ocean; @lloyd2017strains; @parks2017recovery; @lloyd2019multi].
-<!-- In the same print space allocated to a sequence in H. XXXX highlighting repeats that would later be discovered as CRISPRs, a tree of an entire proposed and previously unobserved bacterial phyla species was instead represented. -->
 
 In 2003, Francisco Mojica used his word processor to extract 4,500 CRISPR spacers from 67 genomes and paste them into the NCBI BLAST website where he compared them against the 10^10^ nucleotides in GenBank at that time [@lander2016heroes; @mojica2005intervening]^[While we believe the information cited from @lander2016heroes is correct, later sections of the paper do not properly attribute the contributions of Jennifer Doudna to the CRISPR/cas9 gene editing technology.].
 With 88 matches to known sequences -- 2/3 of which matched transmissible genetic elements like phages or plasmids that were associated with the spacer-carrying microbe -- Mojica was able to infer that the CRISPR system represented a prokaryotic immune system [@mojica2005intervening].
@@ -55,14 +54,14 @@ Unexpected contamination can confound biological interpretation as occured with 
 Alternatively, complex or incomplete experimental design -- be it unbalanced phylogenetic characterization, unevenly sampled groups, or asynchronous time series -- confound statistical inference and may demand new techniques in order to answer a question similar to the one originally posed.
 
 For many biological questions, no data analysis technique currently exists.
-Methods are advancing toward enabling strain-resolved metagenomics [@quince2017desman; @quince2020metagenomics], but no method enables complete strain deconvultion from metagenomes. 
+For example, methods are advancing toward enabling strain-resolved metagenomics [@quince2017desman; @quince2020metagenomics], but no method enables complete strain deconvultion from metagenomes. 
 
 With the adoption of FAIR (Findable, Accessible, Interoperable, and Reusable) data principles across the biology community [@wilkinson2016fair], sequencing data can continually be reanalyzed as tools improve.
 Such has occured with the Marine Microcrobial Eukaryotic Transcriptome Sequencing Project (MMETSP) [@keeling2014marine; @johnson2019re; @alexander2019keeping], and may become more common practice as analysis tools advance.
 
 In this dissertation, I explore the application of new analysis approaches to difficult-to-characterize sequencing datasets.
 The first dataset captures time series gene expression during 60 primary fermentations of Pinot noir wines from 15 vineyards across two vintages (n = 296 samples). 
-The second dataset is a meta-cohort comprising six human gut microbiome shotgun metagenomes during inflammatory bowel disease (n = 605 samples).
+The second dataset is a meta-cohort comprising six studies of human gut microbiome shotgun metagenomes during inflammatory bowel disease (n = 605 samples).
 The first three chapters cover the wine data set, while the fourth chapter covers the inflammtory bowel disease data set.
 While the projects covered are diverse, they are united in their recalcitrance to traditional analysis techniques. 
 

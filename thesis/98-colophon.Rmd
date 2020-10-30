@@ -1,0 +1,32 @@
+# Colophon {-}
+
+This document is set in [EB Garamond](https://github.com/georgd/EB-Garamond), [Source Code Pro](https://github.com/adobe-fonts/source-code-pro/) and [Lato](http://www.latofonts.com/lato-free-fonts/). The body text is set at 11pt with $\familydefault$. 
+
+It was written in R Markdown and \LaTeX, and rendered into PDF using [aggiedown](https://github.com/ryanpeek/aggiedown) and [bookdown](https://github.com/rstudio/bookdown). 
+
+This document was typeset using the pdfLaTeX typesetting system, and the University of California Thesis class. Under the hood, the elements of the document formatting source code have been taken from the [Latex, Knitr, and RMarkdown templates for UC Berkeley's graduate thesis](https://github.com/stevenpollack/ucbthesis), and [Dissertate: a LaTeX dissertation template to support the production and typesetting of a PhD dissertation at Harvard, Princeton, and NYU](https://github.com/suchow/Dissertate)
+
+The source files for this dissertation,
+along with all the data files,
+have been organised into a git repository archived at
+[https://doi.org/10.xxx/zenodo.xxx](https://doi.org/10.xxx/zenodo.xxx).
+A hard copy of the dissertation can be found in the University of California Davis library.
+
+This version of the dissertation was generated on `r Sys.time()`. The repository is currently at this commit:
+```{r echo = FALSE, eval = TRUE, tidy=TRUE, tidy.opts=list(width.cutoff=50)}
+# I've set eval=FALSE to ensure Travis-CI can run
+# if you're not using Travis-CI, then eval=TRUE will be fine
+library(git2r)
+if ( git2r::in_repository() ) {
+       summary(commits()[[1]]) 
+       #print(sha(last_commit()))
+} else { 
+       message("We are not in a git repository") 
+}
+```
+
+The computational environment that was used to generate this version is as follows:
+
+```{r echo = FALSE}
+devtools::session_info()
+```

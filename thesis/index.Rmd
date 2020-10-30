@@ -1,6 +1,6 @@
 ---
 # UCD thesis fields
-title: "Decentralizing Indices for Genomic Data"
+title: "Finding subtle but important biological signals in large sequencing data sets using nontraditional approaches"
 author: "Taylor Elaine Reiter"
 year: "2020"
 month: "November"

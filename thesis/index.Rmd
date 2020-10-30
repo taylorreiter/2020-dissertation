@@ -1,0 +1,72 @@
+---
+# UCD thesis fields
+title: "Decentralizing Indices for Genomic Data"
+author: "Taylor Elaine Reiter"
+year: "2020"
+month: "November"
+program: "Food Science"
+uccampus: "DAVIS"
+report: "DISSERTATION"
+degree: "DOCTOR OF PHILOSOPHY"
+chair: "Ben Montpetit"
+signature1: "C. Titus Brown"
+signature2: "Jonathan Eisen"
+
+dedication: |
+
+acknowledgments: |
+  ```{=latex}
+  \begin{epigraphs}
+    \qitem{quote}%
+          {source}
+  \end{epigraphs}
+  ```
+
+
+abstract: |
+  abstract
+
+# End of UCD thesis fields
+knit: "bookdown::render_book"
+site: bookdown::bookdown_site
+output:
+  aggiedown::thesis_pdf:
+    latex_engine: pdflatex
+#  aggiedown::thesis_gitbook: default
+#  aggiedown::thesis_word: default
+#  aggiedown::thesis_epub: default
+bibliography: bib/thesis.bib
+# Download your specific bibliography database file and refer to it in the line above.
+csl: csl/ecology.csl
+# Download your specific csl file and refer to it in the line above.
+link-citations: yes
+linkcolor: blue
+urlcolor: blue
+citecolor: blue
+lot: true
+lof: true
+#space_between_paragraphs: true
+# Delete the # at the beginning of the previous line if you'd like
+# to have a blank new line between each paragraph
+---
+
+<!--
+Above is the YAML (YAML Ain't Markup Language) header that includes a lot of metadata used to produce the document.  Be careful with spacing in this header!
+
+If you'd like to include a comment that won't be produced in your resulting file enclose it in a block like this.
+-->
+
+<!--
+If you receive a duplicate label error after knitting, make sure to delete the index.Rmd file and then knit again.
+
+```{r include_packages, include = FALSE}
+# This chunk ensures that the aggiedown package is
+# installed and loaded. This aggiedown package includes
+# the template files for the thesis.
+if(!require(devtools))
+  install.packages("devtools", repos = "http://cran.rstudio.com")
+if(!require(aggiedown))
+  devtools::install_github("ryanpeek/aggiedown")
+library(aggiedown)
+```
+-->

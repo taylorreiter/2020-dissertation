@@ -1,0 +1,88 @@
+# Introduction {-}
+
+```{=latex}
+\begin{epigraphs}
+  \qitem{The cell is basically a historical document, and gaining the capacity to read it (by sequencing of genes) cannot but drastically alter the way we look at all biology.}%
+        {Carl Woese, 1987}
+\end{epigraphs}
+```
+
+With the advent of affordable sequencing technologies, microbiology has undergone an information revolution including the expansion of the tree of life by sequencing of uncultivatable bacteria [@brown2015unusual; @parks2017recovery], the discovery of prokaryotic immune systems [@mojica2005intervening], and the discovery of prokaryotic genome fluidity [@tettelin2005genome; @andreani2017prokaryote].
+These revolutionary discoveries were enabled not only with next generation sequencing technologies, but also by increasingly complex sequencing analysis methods. 
+
+Edward DeLong set out on the Research Vessel Wecoma in the fall of 1992 and filtered 30 liters of seawater off of the Oregon coast to collect concentrated bacterioplankton^[Edward DeLong, personal communication October 2020].
+He resuspended the bacterioplankton in molten agarose plugs as a way to reduce DNA sheering upon extraction, thereby ensuring very long pieces of DNA.
+He and his team then painstackingly generated the first archival library of environmental DNA by stably transfecting *Escherichia coli* cells with 3,552 fosmids containing the DNA [@stein1996characterization].
+They isolated and sequenced a 38,500 base pair fragment from an archaeal genome and used a Sun Microsystems SPARCstation10 with less than a gigabyte of RAM to complete their bioinformatic analyses.
+It was the first time a DNA fragment of that size had been sequenced from a mixed microbial community, and these efforts along with other gave rise to the eventual field of shotgun metagenomics [@handelsman1998molecular].
+
+Then, in 2004, using the same method for DNA extraction that had been used by DeLong, Gene Tyson and colleagues used unprecedently deep sequencing (103,462 reads) to characterize a simple bacterial community from acid mine drainage [@tyson2004community].
+Anticipating computational limitations due to within-species strain variation, Tyson used permissive settings during assembly to resolve polymorphic discrepancies [@tyson2004community].
+Using GC content and average read depth across assembled sequences, the assembly was binned into five separate composite genomes in the first proof-of-concept application of metagenomic binning [@tyson2004community].
+As sequencing technology, computational infrastructure, and computational methods have matured, thousands of metagenomes containing hundreds of thousands of species have been generated from diverse ecosystems [@sunagawa2015structure; @kopf2015ocean; @lloyd2017strains; @parks2017recovery; @lloyd2019multi].
+<!-- In the same print space allocated to a sequence in H. XXXX highlighting repeats that would later be discovered as CRISPRs, a tree of an entire proposed and previously unobserved bacterial phyla species was instead represented. -->
+
+In 2003, Francisco Mojica used his word processor to extract 4,500 CRISPR spacers from 67 genomes and paste them into the NCBI BLAST website where he compared them against the 10^10^ nucleotides in GenBank at that time [@lander2016heroes; @mojica2005intervening]^[While we believe the information cited from @lander2016heroes is correct, later sections of the paper do not properly attribute the contributions of Jennifer Doudna to the CRISPR/cas9 gene editing technology.].
+With 88 matches to known sequences -- 2/3 of which matched transmissible genetic elements like phages or plasmids that were associated with the spacer-carrying microbe -- Mojica was able to infer that the CRISPR system represented a prokaryotic immune system [@mojica2005intervening].
+Subsequent automated and specific search efforts have revealed the existence of CRISPR loci in half of bacteria and many archaea [@grissa2007crisprdb], as well as other antiphage defense systems [@doron2018systematic].
+
+In 2005, 239 microbial genomes had been sequenced, two of which belonged to the species *Streptococcus agalactiae* (also known as group B streptococcus or GBS).
+A team led by Herve Tettelin sequenced six additional *S. agalactiae* strains to determine the number of genomes needed to capture the full complement of genes in a bacterial species [@tettelin2005genome; @medini2005microbial].
+The theoretical conclusion of this study was that 33 new genes would continually be added to the species' genome with each new genome sequenced [@tettelin2005genome].
+To generate the input dataset needed for modelling genome expansion, the team used a combinatorial approach whereby they compared each genome sequence to every other genome sequence -- an approach that is inherently unscalable.
+With the advent of sequence clustering algorithms and consensus representations such as pangenome graphs [@contreras2013get_homologues; @gautreau2020ppanggolin; @zhou2020accurate], pangenome analysis now routinely includes thousands of genomes [@gautreau2020ppanggolin; @groschel2020phylogenetic; @rajkumari2020distinctive], reinforcing the idea of prokaryotic pangenome fluidity [@andreani2017prokaryote].
+
+Data generation by sequencing is no longer the bottleneck for discovery in microbiology.
+The burden has shifted to data analysis.
+
+Increasingly, new algorithms and data structures are needed to handle the scale of sequencing data included in analyses. 
+Where it was once feasible to BLAST all newly generated sequencing reads against GenBank for taxonomic and functional classification, specialized data structures like sequence bloom trees built from systemically subsampled sequences now enable comprehensive searching of databases like RefSeq (2.1 × 10^12^ nucleotides [@refseq]), GenBank (6.2 × 10^12^ nucleotides [@sayers2020genbank]), and the Sequence Read Archive (4.5 x 10^16^ bases [@sra]) [@luiz_irber_2020_4057151; @pierce2019large]. 
+This has spurred on discoveries like strain-level identification of viral pathogens [@mechan2020strain]. 
+
+Yet, while we have tenable techniques for some sequencing data analysis exercises, for many others we lack approaches to interrogate the data at the resolution and scale necessary for discovery.
+While NCBI databases have rapidly increased in size, reference databases are incomplete.
+Analysis methods that rely on reference genomes or transcriptomes are often blind toward unmappable reads and therefore incompletely characterize an ecological niche.
+Reference-based pipelines like HUMANn2 that are commonly used to analyze human microbiome metagenomic characterize on average 31%-60% of reads from the human gut microbiome metagenome [@franzosa2014].
+
+Reference-independent approaches such as assembly or annotation are hampered by other problems. 
+*De novo* assembly approaches fail when there is low-coverage of or high variation (e.g. strain or isoform), or with sequencing error [@olson2017].
+Unfortunately, metagenome binning approaches require relatively long assembled sequences (> 2000 base pairs) and thus do not bin complex regions that fail to assemble.
+In practice, this leads to many uncharacterizable sequences; in a recent large-scale human metagenome reanalysis effort, an average of 12.5% of reads failed to map to any *de novo* genome bin [@pasolli2019].
+The content of these reads and their biological significance remains unknown.
+
+Many datasets require the development of specialized analysis approaches to devine the biological information therein.
+Unexpected contamination can confound biological interpretation as occured with the tardigrade genome [@boothby2015evidence; @koutsovoulos2016no], or can convolute standard interpretation practices as occured for the mock metagenome community composed of mixed DNA extracts from lab-grown isolates [@shakya2013comparative; @brown2020exploring].
+Alternatively, complex or incomplete experimental design -- be it unbalanced phylogenetic characterization, unevenly sampled groups, or asynchronous time series -- confound statistical inference and may demand new techniques in order to answer a question similar to the one originally posed.
+
+For many biological questions, no data analysis technique currently exists.
+Methods are advancing toward enabling strain-resolved metagenomics [@quince2017desman; @quince2020metagenomics], but no method enables complete strain deconvultion from metagenomes. 
+
+With the adoption of FAIR (Findable, Accessible, Interoperable, and Reusable) data principles across the biology community [@wilkinson2016fair], sequencing data can continually be reanalyzed as tools improve.
+Such has occured with the Marine Microcrobial Eukaryotic Transcriptome Sequencing Project (MMETSP) [@keeling2014marine; @johnson2019re; @alexander2019keeping], and may become more common practice as analysis tools advance.
+
+In this dissertation, I explore the application of new analysis approaches to difficult-to-characterize sequencing datasets.
+The first dataset captures time series gene expression during 60 primary fermentations of Pinot noir wines from 15 vineyards across two vintages (n = 296 samples). 
+The second dataset is a meta-cohort comprising six human gut microbiome shotgun metagenomes during inflammatory bowel disease (n = 605 samples).
+The first three chapters cover the wine data set, while the fourth chapter covers the inflammtory bowel disease data set.
+While the projects covered are diverse, they are united in their recalcitrance to traditional analysis techniques. 
+
+**Chapter 1** and **Chapter 2** analyze the trajectory of gene expression by *Saccharomyces cerevisiae* during wine fermentation using differential expression over continuous variables. 
+Chapter 1 identifies the dominant metabolic transitions of *S. cerevisiae* using brix (a proxy for sugar concentration), the only continuous variable measured as fermentations progressed. 
+I demonstrate that previously catalogued processes are easily detectable in fermentation, but that other signatures likely warrant future research.
+Chapter 2 uses a technique called diffusion mapping to extract latent variables (termed diffusion components) in the dataset, and then performs continuous differential expression along those variables. 
+I show that the first diffusion component captures the change in brix throughout fermentation, while subsequent diffusion components reveal transitions in early and late fermentation as well as vineyard-specific differences in gene expression.
+As a sparse, unevenly sampled time series, traditional time-series gene expression analysis methods failed to capture the similarities and differences among samples.
+Diffusion mapping separated subtle differences among samples, and when coupled with continuous differential expression, revealed the genes responsible for separation.
+
+**Chapter 3** explores the taxonomy of reads that did not map to the *S. cerevisiae* genome and would typically be discarded from other analyses.
+I identify persistent genetic signatures of vineyard site across fermentations, in large part attributable to genes expressed by *Vitis vinifera* and non-*Saccharomyces* microorganisms.
+
+**Chapter 4** develops a novel computational approach to identify and characterize microbial signatures of inflammatory bowel disease in human gut microbiome shotgun metagenomes.
+Inflammatory bowel disease is a heterogenous disease for which no universal microbial biomarker exists for disease prediction, in part due to metagenome analysis techniques that discard large portions of uncharacterizable data.
+I developed a k-mer-based approach to identify disease-associated k-mers, and then anchored these k-mers to their sequence context using assembly graph queries.
+This approach leverages all of the sequencing data and in doing so identifies consistent cross-study microbial signatures of inflammatory bowel disease.
+
+**Chapter 5** provides an overview and brief guide to making sequencing data analysis automated, portable, scalable, repeatible, and reproducible. 
+I used over 350,000 CPU hours to complete the projects in this disseration as well as other projects from which I draw expertise in the material presented herein. 
+These efforts were coordinated by a powerful and integrated computational framework built around workflow systems and software managers.
+The piece is written as a guide to scaling computational pipelines from a few samples to a few hundred samples and aimed at graduate students or other researchers who are expanding their sequencing analysis to large data sets.

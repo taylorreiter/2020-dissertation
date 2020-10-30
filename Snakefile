@@ -4,7 +4,7 @@ rule all:
 rule install_deps:
   conda: 'envs/R.yml'
   shell: """
-    TAR=/usr/bin/tar R -e 'devtools::install_github("ryanpeek/aggiedown@ae99300d43bdccc16069efcc08198624c76eee0c", upgrade = "never")'
+    TAR=/bin/tar R -e 'devtools::install_github("ryanpeek/aggiedown@ae99300d43bdccc16069efcc08198624c76eee0c", upgrade = "never")'
   """
 
 rule start_thesis:
@@ -19,8 +19,7 @@ rule build_thesis:
   output: 'thesis/_book/thesis.pdf'
   input:
     sources=expand('thesis/{rmd}.Rmd',
-                   rmd=('index', '00-intro', '01-scaled', '02-index',
-                        '03-gather', '04-distributed', '05-decentralized',
+                   rmd=('index', '00-intro', 
                         '06-conclusion', '07-appendix', '98-colophon', '99-references')),
     templates="thesis/template.tex",
     bibliography='thesis/bib/thesis.bib'

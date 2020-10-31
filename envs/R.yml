@@ -60,3 +60,4 @@ dependencies:
   - r-xfun=0.6
   - r-xml2=1.2.2
   - r-xtable=1.8_4
+  - r-kableExtra

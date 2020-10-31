@@ -19,7 +19,7 @@ rule build_thesis:
   output: 'thesis/_book/thesis.pdf'
   input:
     sources=expand('thesis/{rmd}.Rmd',
-                   rmd=('index', '00-intro', '05-workflows',
+                   rmd=('index', '00-intro', '04-ibd', '05-workflows',
                         '06-conclusion', '07-appendix', '98-colophon', '99-references')),
     templates="thesis/template.tex",
     bibliography='thesis/bib/thesis.bib'

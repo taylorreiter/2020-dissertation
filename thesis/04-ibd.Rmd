@@ -1,0 +1,755 @@
+# Microbial signatures of IBD in a meta-cohort analysis of shotgun metagenomes {#chp-ibd}
+
+```{=latex}
+\begin{epigraphs}
+  \qitem{We only know a tiny proportion about the complexity of the natural world. Wherever you look, there are still things we don’t know about and don’t understand...There are always new things to find out if you go looking for them.}%
+        {David Attenborough}
+\end{epigraphs}
+```
+
+```{r libs, echo = F, message = F, warning = F}
+library(kableExtra)
+```
+
+## Introduction
+
+Inflammatory bowel disease (IBD) is a spectrum of diseases characterized by chronic inflammation of the intestines that is likely caused by host-mediated inflammatory responses elicited in part by microorganisms [@kostic2014].
+IBD is cyclical with periods of active disease and remission. 
+IBD manifests in three subtypes depending on clinical presentation, including Crohn's disease (CD), which presents as discontinuous patches of inflammation throughout the gastrointestinal tract, ulcerative colitis (UC), which presents as continuous inflammation isolated to the colon, and undetermined, which cannot be distinguished as CD or UC.
+Diagnosis is often clinically difficult, with ramifications associated with over- or under-treatment that lead to decreased patient well-being. 
+Detection of microbial signatures associated with IBD subtype may lead to improved diagnostic criteria and therapeutics that extend periods of remission.
+However, such a signature has thus far remained elusive [@kumar2019integrating].
+
+The microbiome of CD and UC is heterogeneous, and studies that characterize the microbiome often produce conflicting results.
+This is likely in part driven by large inter- and intra-individual variation [@lloyd2019], but is also attributable to non-standardized laboratory, sequencing, and analysis techniques used to profile the gut microbiome [@kumar2019integrating]. 
+Dysbiosis is frequently observed in IBD, particularly in CD [@kang2010dysbiosis; @machiels2014decrease; @lewis2015; @moustafa2018; @qin2010], however dysbiosis alone is not a signature of IBD [@lloyd2019].
+Dysbiosis is defined as a decrease in gut microbial diversity that results in an imbalance between protective and harmful microorganisms, leading to intestinal inflammation [@weiss2017mechanisms].
+
+Strain-level differences may account for some heterogeneity in IBD gut microbiome profiles.
+Here we use *strain* to refer to within-species variation that generates grouping below the species level.
+A recent investigation of time-series gut microbiome metagenomes found that one clade of *Ruminococcus gnavus* is enriched in CD [@hall2017]. 
+Further, this clade produces an inflammatory polysaccharide [@henke2019ruminococcus].
+While this clade is enriched in CD, its enrichment was previously masked from computational discovery by concomitant decreases in other *Ruminococcus* species in IBD [@hall2017], highlighting the need for strain-resolved analysis of metagenomic sequencing in the exploration of IBD gut microbiomes.
+
+Strain-resolved analysis of metagenomes is challenging. 
+Shotgun metagenomics captures the functional potential of microbial communities through DNA sequencing of genes and organisms. 
+Multiple analysis approaches have been proposed for shotgun metagenomes, however the majority of studies investigating the gut microbiome in IBD have used reference-based analysis [@gevers2014; @lewis2015; @hall2017; @franzosa2019; @lloyd2019]. 
+Reference-based techniques are high-resolution and often rich in tertiary information like functional annotations, niche associations, and metabolic products. 
+It is difficult to resolve strains with reference-based techniques alone given that databases are often incomplete, and that assigning reads to the best reference is computationally intensive and thus needs to be performed on an incomplete set of reference organisms and genes.
+<!-- In particular, if strain variation primarily occurs outside of highly-conserved clade-specific markers, it will be undetectable. -->
+These challenges may obscure either the presence or enrichment of a specific strain, masking strain dynamics in disease  [@thomas2019multiple; @breitwieser2019review].
+
+Alternative analysis techniques are better suited for strain-resolved analysis at scale.
+K-mers, words of length *k* in nucleotide sequences, have previously been used for annotation-free characterization of sequencing data [@sheppard2013genome; @dubinkina2016assessment; @standage2019kevlar].
+K-mers are suitable for strain-resolved metagenome analysis because they do not need to be present in reference databases to be included in analysis, they do not rely on marker genes which are largely conserved at the strain level, and they are suitable for species- and strain-level classification [@koslicki2016]. 
+However, investigating all k-mers in a cohort of metagenomes is more computationally intensive than reference-based approaches [@benoit2016multiple]. 
+Data-reduction techniques like MinHash sketching make k-mer-based analysis scalable to large-scale sequence comparisons, including comparisons between many metagenomes and comparisons against all ~500,000 sequenced microbial genomes [@pierce2019; @rowe2019levee]. 
+MinHash sketching sacrifices the fine-scaled resolution of reference-based techniques but is representative of the full sequencing sample, including strain-variable accessory elements that are associated with diseases. 
+
+Tertiary information acquired through reference-based analysis, in particular functional annotations and gene-gene proximity, is lost through MinHash sketching analysis but can be recovered via assembly-graph queries with k-mers of interest [@brown2020exploring; @jaillard2018fast]. 
+Both k-mers and assembly graphs represent all sequences contained within a metagenome, retaining strain-specific features that may be lost by other analysis approaches. 
+Assembly graphs reassociate k-mers with important context (e.g. operon structures) and known annotations, recovering critical information lost through the MinHash sketching approach.
+We refer to sequences nearby to and recovered by queries as assembly graph *neighborhoods* [@brown2020exploring]. 
+Neighborhoods are targeted subsets of metagenomes that contain only sequences of interest that can be analyzed with traditional, computationally-intensive, high-resolution methods. 
+While traditional analysis methods may sometimes fail on neighborhoods given sequence complexity or lack of representation in databases, it is clear when the fail, making these known-unknown problems instead of unknown-unknown problems [@brown2020exploring].
+
+Here we use k-mer- and assembly-graph-based techniques to perform a meta-cohort analysis of six studies of IBD gut metagenome cohorts comprising 260 CD, 132 UC and 213 healthy controls (see **Table \@ref(tab:cohorts)**) [@lloyd2019; @lewis2015; @hall2017; @franzosa2019; @gevers2014; @qin2010].
+Through meta-cohort analysis, we demonstrate a weak but consistent signature of IBD subtype in fecal microbiome metagenomes. 
+Only a small subset of all k-mers are predictive of UC and CD, and these k-mers originate from a core set of microbial genomes. 
+We find that stochastic loss of diversity in this core set of microbial genomes is a hallmark of CD, and to a lesser extent, UC. 
+While reduced diversity is responsible for the majority of disease signatures, we find signatures of strain enrichment in disease. 
+Genes presumably associated with these strains occur more frequently in IBD metagenomes but are present in low abundance in nonIBD as well.
+Our findings highlight the need for strain-level analysis of metagenomic data sets, and provide future avenues for research into IBD therapeutics.
+
+## Results
+
+### K-mers capture variation due to IBD subtype
+
+```{r cohorts, echo=FALSE, message=FALSE, warnings=FALSE}
+cohort_data <- "
+Cohort      |   Name          | Country      |Total|CD|UC|nonIBD 
+iHMP\\textsuperscript{1}     | IBDMDB                   | USA              | 106   | 50  | 30  | 26   
+PRJEB2054\\textsuperscript{2}   | MetaHIT                  | Denmark, Spain   | 124   | 4   | 21  | 99 
+SRP057027\\textsuperscript{3}  | NA                       | Canada, USA      | 112   | 87  | 0   | 25 
+PRJNA385949\\textsuperscript{4} | PRISM, STiNKi            | USA              | 17    | 9   | 5   | 3 
+PRJNA400072\\textsuperscript{5} | PRISM, LLDeep, and NLIBD | USA, Netherlands | 218   | 87  | 76  | 55  
+PRJNA237362\\textsuperscript{6} | RISK                     | North America    | 28    | 23  | 0   | 5 
+Total       |                          |                  | 605   | 260 | 132 | 213 "      
+df <- read.delim(textConnection(cohort_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, caption = "Six IBD shotgun metagenome sequencing cohorts used in this meta-cohort analysis. \\textsuperscript{1}(ref:lloyd2019), \\textsuperscript{2}(ref:qin2010), \\textsuperscript{3}(ref:lewis2015), \\textsuperscript{4}(ref:hall2017), \\textsuperscript{5}(ref:franzosa2019), \\textsuperscript{6}(ref:gevers2014).", format = "latex", booktabs = T, escape = F) %>%
+  kable_styling(font_size = 9)
+```
+
+(ref:lloyd2019) @lloyd2019
+(ref:qin2010) @qin2010
+(ref:lewis2015) @lewis2015
+(ref:hall2017) @hall2017
+(ref:franzosa2019) @franzosa2019
+(ref:gevers2014) @gevers2014
+
+```{r overview, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.cap="Overview of the metagenome analysis technique used in this paper. **A** K-mers are words of length *k* in nucleotide sequences. The sequence depicted is decomposed into k-mers of *k = 4*, however we use *k = 31* in this analysis. **B** Short read metagenomes consist of 36-300 bp reads derived from DNA sequences. We decompose reads into k-mers and subsample these k-mers, selecting k-mers that evenly represent the sequence diversity within a sample. We then identify interesting k-mers using random forests, and associate these k-mers with genomes in reference databases. Meanwhile, we construct a compact de Bruijn assembly graph that contains all k-mers from a metagenome. We query this graph with known genes or genomes associated with interesting k-mers to recover sequence diversity nearby in the assembly graph. In the colored assembly graph, light grey nodes indicate nodes that contain at least one identical k-mer to the query, while nodes outlined in orange indicate the nearby sequences recovered via assembly graph queries. The combination of all orange nodes produces a sample-specific pangenome that represents the strain variation of closely-related organisms within a single metagenome. We repeat this process for one genomes across all metagenomes and generate a single pangenome depicted in orange, blue, and pink."}
+knitr::include_graphics('figure/ibdfig1.pdf')
+```
+
+We developed a reference-free pipeline to fully characterize gut metagenomes of IBD patients (**Figure \@ref(fig:overview)**).
+After consistent preprocessing, we use scaled MinHash sketching to produce subsampled k-mer abundance profiles of metagenomes that reflect the sequence diversity in a sample [@pierce2019], and use these profiles to perform metagenome-wide k-mer association with IBD subtype. 
+We refer to scaled MinHash sketches as *signatures*, and for simplicity, continue referring to the sub-sampled k-mers in a signature as *k-mers*. 
+In total, we profiled 7,376,151 k-mers across all samples in all cohorts. 
+
+We detected variation due to IBD diagnosis in k-mer profiles of gut metagenomes from different cohorts.
+We calculated pairwise distance matrices using jaccard distance and angular distance between k-mer profiles, where jaccard distance captured sample richness and angular distance captured sample diversity. 
+We performed principle coordinate analysis and PERMANOVA with these distance matrices (**Figure \@ref(fig:compplts)**), using the variables study accession, diagnosis, library size, and number of k-mers observed in a sample (**Table \@ref(tab:permanova)**). 
+Number of k-mers observed in a sample accounted for the highest variation, possibly reflecting reduced diversity in stool metagenomes of CD and UC patients (reviewed in [@schirmer2019microbial]). 
+Study accounted for the second highest variation, emphasizing that technical artifacts can introduce strong signals that may influence heterogeneity in IBD microbiome studies but that can be mitigated through meta-cohort analysis [@wirbel2019].
+Diagnosis accounted for a similar amount of variation as study, indicating that there is a small but detectable signal of IBD subtype in stool metagenomes.
+
+```{r compplts, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.cap="Principle coordinate analysis of metagenomes from IBD cohorts performed on k-mer profiles. **A** Jaccard distance. **B** Angular distance."}
+knitr::include_graphics('figure/ibdfig2.pdf')
+```
+
+```{r permanova, echo=FALSE, message=FALSE, warnings=FALSE}
+permanova_data <- "
+Variable |Jaccard distance | Angular distance
+Number of k-mers | 9.9%           | 6.2%
+Study accession  | 6.6%           | 13.5
+Diagnosis        | 6.2%           | 3.3%
+Library size     | 0.009%        | 0.01%"      
+df <- read.delim(textConnection(permanova_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, col.names = c("Variable", "Jaccard distance", "Angular distance"),
+      caption = "Results from PERMANOVA performed on Jaccard and Angular distance matrices. Number of k-mers refers to the number of k-mers in a signature, while library size refers to the number of raw reads per sample. All test were significant at p < .001.") %>%
+  kable_styling(font_size = 9)
+```
+
+### K-mers are weakly predictive of IBD subtype
+
+To evaluate whether the variation captured by diagnosis is predictive of IBD subtype, we built random forests classifiers to predict CD, UC, or nonIBD subtype.
+Random forests is a supervised learning classification model that estimates how predictive k-mers are of IBD subtype, and weights individual k-mers as more or less predictive using a metric called variable importance.
+To assess whether disease signatures generalize across study populations, we used a leave-one-study-out cross-validation approach where we built and optimized a classifier using five cohorts and validated on the sixth.
+Given the high-dimensional structure of this data set (e.g. many more k-mers than metagenomes), we first used variable selection to narrow the set of predictive k-mers in the training set [@janitza2018; @degenhardt2017].
+Variable selection reduced the number of k-mers used in each model by two orders of magnitude, from 7,376,151 to 29,264-41,701 (**Table \@ref(tab:varselhashes)**). 
+Using this reduced set of k-mers, we then optimized each random forests classifier on the training set, producing six optimized models. 
+We validated each model on the left-out study.
+The accuracy on the validation studies ranged from 49.1%-75.9% (**Table \@ref(tab:acc)**, **Figure \@ref(fig:confusionplts1)**), outperforming a previously published model built on metagenomic data alone [@franzosa2019].
+
+```{r varselhashes, echo=FALSE, message=FALSE, warnings=FALSE}
+varsel_data <- "
+Validation study|Selected k-mers |Percent of total k-mers
+PRJNA385949 | 41701 | 0.57% 
+PRJNA237362 | 40726 | 0.55% 
+iHMP        | 39628 | 0.54% 
+PRJEB2054   | 35343 | 0.48% 
+PRJNA400072 | 32578 | 0.44% 
+SRP057027   | 29264 | 0.40% "      
+df <- read.delim(textConnection(varsel_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, 
+      caption = "Number of predictive k-mers after variable selection for each of 6 classifiers. Classifiers are labeled by the validation study that was held out from training.",
+      col.names = c("Validation study", "Selected k-mers", "Percent of total k-mers")) %>%
+  kable_styling(font_size = 9)
+```
+
+```{r acc, echo=FALSE, message=FALSE, warnings=FALSE}
+acc_data <- "
+Validation Study | k-mer model |full marker gene model | core marker gene model | k-mer model of core marker genes 
+SRP057027        |    75.9    | 85.7 |   86.4       |   71.7  
+PRJNA237362      |    71.4    | 75 |      75        |   64.3  
+PRJEB2054        |    69.4    | 39 |     19.1       |   15.5   
+PRJNA385949      |    52.9    | 47.1 |     52.9     |   41.2
+PRJNA400072      |    50.9    | 49.5 |     48.1     | 47.4
+iHMP             |    49.1    | 48.6|   44.2       |   46.5"
+df <- read.delim(textConnection(acc_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, 
+      caption = "Accuracy of random forests classifiers built with different underlying representations of IBD metagenomes when applied to each validation set. *m.* is an abbreviation for model.", 
+      col.names = c("validation study", "k-mer m.", "full marker gene m.", "core marker gene m.", "k-mer m. of core marker genes")) %>%
+  kable_styling(font_size = 9)
+```
+
+We found that a substantial fraction of k-mers were shared between models, indicating there is a consistent biological signal captured among classifiers.
+Nine hundred and thirty-two k-mers were shared between all classifiers, while 3,859 k-mers were shared between at least five classifiers (**Figure \@ref(fig:upset)**).
+The presence of shared k-mers between classifiers indicates that there is a weak but consistent biological signal in metagenomes for IBD subtype between cohorts.      
+                
+Shared k-mers represented 2.8% of all k-mers used to build the optimized classifiers, but accounted for an outsized proportion of variable importance in the optimized classifiers.
+After normalizing variable importance across classifiers, 40.2% of the total variable importance was held by shared k-mers, with 21.5% attributable to the 932 k-mers shared between all six classifiers. 
+Shared k-mers contribute a large fraction of predictive power for classification of IBD subtype. 
+
+Many k-mers were identifiable when compared against all microbial genomes in GenBank, as well as metagenome-assembled genomes from three recent *de novo* assembly efforts from human microbiome metagenomes [@pasolli2019; @nayfach2019; @almeida2019]. 
+77.7% of k-mers from all classifiers were identifiable and anchored to 1,161 genomes (**Figure \@ref(fig:sharedfeatures) A**). 
+In contrast, 69.4% of shared k-mers anchored to only 41 genomes (**Figure \@ref(fig:sharedfeatures) B**).
+These shared 41 genomes held an additional 10.3% of total model variable importance over the shared k-mers because some genomes contain additional k-mers not shared across all models.
+Using GTDB taxonomy, we find 38 species represented among the 41 genomes (**Figure \@ref(fig:sharedfeatures)C**).
+These genomes represent a microbial core that contains predictive power in IBD subtype classification. 
+
+```{r sharedfeatures, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.cap="**A** K-mers in random forests classifiers anchor to 1,161 known genomes accounting for 75.1-80.3% of all predictive k-mers in each model. Models are labeled by validation study. **B** The 3,859 k-mers that were shared between the majority of models anchored to 41 genomes. These genomes accounted for 50.5% of cumulative normalized variable importance for k-mers across all models."}
+knitr::include_graphics('figure/ibdfig3.pdf')
+```
+
+### Decreased abundance of marker genes dominates signatures of IBD
+
+To determine the functional annotation of the shared k-mers that were important for IBD subtype classification, we performed assembly graph queries using all genes from the 41 shared genomes, and anchored k-mers to the genes when they occurred in gene neighborhoods.
+
+<!-- To annotate each k-mer, we reasoned that a k-mer with predictive importance would be nearby the genomic feature driving the predictive signal in both genomic DNA and the DNA assembly graph.  -->
+<!-- Therefore, we performed assembly graph queries on each metagenome using each gene in the 41 shared genomes.  -->
+<!-- We then identified all gene query neighborhoods in which each k-mer occurred, and transferred those annotations to the k-mer. -->
+
+Many k-mers annotated as bacterial marker genes, as well as 16S and 23S ribosomal RNA (**Figure \@ref(fig:hashcontent)**). 
+Marker genes are present in most known bacteria and distinguish taxonomic ranks through sequence similarity estimates [@parks2015checkm; @na2018ubcg].
+Four hundred and forty k-mers accounting for 7.5% of variable importance across all models annotated as bacterial marker genes. 
+We performed differential abundance analysis on these k-mers and found that 89.4% were decreased in IBD, particularly in CD. 
+This demonstrates that loss of species diversity captured by decreased marker gene abundance is a signature of IBD subtype.
+
+We next investigated whether accuracy in our k-mer models is driven by signals of reduced diversity in IBD alone. 
+We built a series of classifiers to determine whether the k-mer models contained additional predictive accuracy derived from genetic elements other than marker genes. 
+
+First, we built random forests classifiers using abundance of marker genes alone from all marker genes in the whole metagenome and from marker genes in the neighborhoods of shared 41 genomes alone.
+Both model types performed similarly to the k-mer models (**Table \@ref(tab:acc)**), but performed marginally better at CD classification and marginally worse at UC classification (**Figure \@ref(fig:confusionplts1), Figure \@ref(fig:confusionplts2)**). 
+Reduced accuracy on cohort PRJEB2054 is attributable to 36 base pair reads used for sequencing that reduces accuracy of marker gene prediction from reads.
+
+Next, we built k-mer models using subsampled k-mers abundances from the marker genes to better represent the marker gene sequences as they appeared in the original k-mer models. 
+These models performed worse than the original k-mer models and the marker gene models (**Table \@ref(tab:acc), Figure \@ref(fig:confusionplts1), Figure \@ref(fig:confusionplts2)**). 
+The accuracy of the k-mer model of marker genes is a proxy for the fraction of accuracy in the original k-mer models attributable to marker genes, or the decreased species diversity observed in IBD. 
+The remaining fraction of accuracy is not driven by decreased species abundance, but by other differences in IBD subtypes.
+Therefore, we concluded that while marker genes are important for the classification of IBD subtype, non-marker gene genetic elements also contribute to predictive accuracy.
+
+<!-- Both the k-mer model and the marker gene model ranked a 16S rRNA sequence from the genus *Acetatifactor* as having the highest variable importance across studies, demonstrating that while based on different data features, both model types extract similar information.   -->
+
+
+```{r hashcontent, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.cap="Decrease in marker gene abundance drove differences between CD and nonIBD. **A** Many shared k-mers annotated as marker genes or ribosomal RNAs. 11.4% of the 3859 shared k-mers annotated as marker genes, accounting for 7.5% of variable importance across all models. **B** The majority of k-mers were less abundant in IBD than in nonIBD. However, k-mers that anchored to four genomes in CD and two genomes in UC were more abundant. The 41 shared genomes were annotated as 38 species in the GTDB taxonomy. **C** Using pangenome assemblies from these genomes, many KEGG pathways were enriched among genes that were more abundant in CD than nonIBD. Biosynthesis is abbreviated as biosynth. **D** Number of predicted genes in the pangenome that were differentially abundant between CD or UC and nonIBD for each of the enriched strains."}
+knitr::include_graphics('figure/ibdfig4.pdf')
+```
+
+### Decreased diversity punctuated by enrichment of accessory elements in IBD
+
+To understand what non-marker gene signatures of IBD were captured by the k-mer model, we performed differential abundance analysis on the remaining shared k-mers that were not annotated as marker genes.
+While many more k-mers were differentially abundant in CD than UC when compared to nonIBD (1815 k-mers versus 166 k-mers, respectively), the majority of k-mers were less abundant in IBD (**Figure \@ref(fig:hashcontent)**).
+<!-- This was driven by loss of species diversity, not systematic loss of specific functional potential. -->
+
+Many beneficial bacteria, in particular those that are oxygen sensitive, decreased in abundance in CD and UC.
+Two strains of *Faecalibacterium prausnitzii* had the largest number of k-mers with decreased abundance in CD compared to nonIBD (**Figure \@ref(fig:hashcontent) B**). 
+*F. prausnitzii* is an obligate anaerobe and a key butyrate producer in the gut, and plays a crucial role in reducing intestinal inflammation [@lopez2017faecalibacterium].
+*F. prausnitzii* is extremely sensitive to oxygen, though it may be able to withstand oxygen exposure for up to 24 hours depending on the availability of metabolites for extracellular electron transfer [@lopez2017faecalibacterium].
+*Acetatifactor* (GTDB species *Acetatifactor sp900066365*) had largest variable importance of k-mers with decreased abundance in CD compared to nonIBD (**Figure \@ref(fig:hashcontent)**).
+*Acetatifactor* is a bile-acid producing bacteria associated with a healthy gut, but limited evidence has associated it with decreased abundance in IBD [@pathak2018intestine].
+In UC, *Gemmiger formicilis* had both the largest variable importance and number of k-mers with decreased abundance compared to nonIBD (**Figure \@ref(fig:hashcontent)**).
+*G. formicilis* is a strictly anaerobic bacteria that produces both formic acid and butyric acid [@gossling1975gemmiger].
+We also observed a decrease in other oxygen-sensitive species, including *Lachnospira eligens* (annotated in NCBI taxonomy as *[Eubacterium] elegans*). 
+*L. elegans* is an obligate anaerobe that is unable to tolerate atmospheric oxygen for an hour [@hall2017]. 
+Collectively, the decrease in species diversity we observed in IBD, in particular CD, is consistent with a shift toward increased oxidative stress during disease that is intolerable for many gut microbes [@rigottier2013dysbiosis].
+
+A substantial portion of k-mers in the neighborhoods of four genomes in CD and two genomes in UC were more abundant in disease (**Figure \@ref(fig:hashcontent)**).
+While many of the k-mers in the less abundant fractions from these genome neighborhoods annotated to marker genes, the more abundant k-mers annotated to metabolic pathways like starch and sucrose metabolism or flagellar assembly (**Figure \@ref(fig:hashcontentsupp)**).
+<!-- TR: move to supplement once the other figure is made -->
+This is indicative of strain enrichment in IBD, where most strains from a species become less abundant but one or multiple strains with distinct accessory genes becomes more abundant.
+Only the increase in the distinct accessory genes is detectable amongst the backdrop of general loss of gene abundance due to decrease in other strains.
+Enrichment of specific metabolic pathways is consistent with functional specialization of strains in different environmental niches [@costea2017subspecies].
+These four genomes annotated to *Faecalicatena gnavus* (referred to as *[Ruminococcus] gnavus* in NCBI taxonomy and IBD literature) and  *Clostridium bolteae* in CD, and two genomes in the genus *Flavonifractor* in CD and UC. 
+
+*F. gnavus* is an aerotolerant anaerobe, one clade of which was recently found to be enriched in CD [@hall2017], and to produce an inflammatory polysaccharide [@henke2019ruminococcus]. 
+*C. bolteae* is a member of the normal gut microbiota but is an opportunistic pathogen that exploits compromised intestinal barriers [@dehoux2016comparative].
+It is associated with disturbance succession and has increased gene expression during gut dysbiosis [@lozupone2012identifying; @lloyd2019].
+<!-- *Flavonifractor plautii* and *Flavonifractor sp000508885*  -->
+Species from the genus *Flavonifractor* have rarely been associated with CD or UC [@schaffler2016mucosa; @kwak2020development; @selvig2020fecal; @chen2019p854].
+Interestingly, *Flavonifractor sp000508885* (originally published as *Flavonifractor plautii*) was identified as a member of a 17-species consortia that induces human CD4+FOXP3+Treg cells, key beneficial immunomodulators of gut homeostasis [@atarashi2013t].
+However, *F. sp000508885* was one of two strains in the consortia that was detected as more abundant in UC metagenomes [@atarashi2013t], and genes encoding virulence factors such as flagellar assembly were detected in this strain [@atarashi2013t]. 
+This suggests that *F. sp000508885* may be associated with disease only at high abundance, or that this association may be multifactorial and require other environmental or microbial associates.
+
+To fully characterize the genome neighborhoods containing k-mers that were more abundant in IBD, we generated pangenomes via assembly, clustering, and annotation of all genes in the assembly graph neighborhood of each genome.
+Not all shared k-mers in the neighborhoods of these four genomes were contained in the pangenome because many do not assemble (**Figure \@ref(fig:assembled)**).
+Across the four genomes neighborhoods, an average of 74.1% and 9.6% of shared predictive k-mers that were less or more abundant in IBD do not assemble, respectively.
+Many of the unassembled k-mers that were less abundant in IBD annotated to 16S and 23S ribosomal RNA, which frequently do not assemble due to sequence complexity [@yuan2015reconstructing].
+While these sequences are not analyzed in assembly-based approaches, our k-mer-based analysis rescued these associations.
+
+We performed differential abundance analysis on genes in these four pangenomes.
+Many more genes were differentially abundant in CD than in UC compared to nonIBD (**Figure \@ref(fig:hashcontent)D**).
+However, of the shared k-mers that assembled from these four genome neighborhoods, 98.9% anchor to genes with the same differential abundance direction as the k-mers (e.g., more or less abundant), indicating consistent results between the two methods.
+Many genes that anchor k-mers, particularly those that were more abundant in *Flavonifractor*, were not significantly different in CD or UC compared to nonIBD after Bonferroni p-value correction. 
+Even still, we detected many significantly differentially abundant genes among these strains (**Figure \@ref(fig:hashcontent)D**).
+These results indicate that subsampled k-mer profiles were an adequate, scalable tool for investigating strain-level variation in metagenomes and for capturing large-scale disease associations.
+
+We performed KEGG pathway enrichment analysis on genes that were more abundant in IBD from the four pangenomes.
+Given the small number of differentially abundant genes in UC, the only significantly enriched pathways contained one gene and thus were not likely biologically meaningful. 
+In contrast, many pathways were enriched in CD (**Figure \@ref(fig:hashcontent)**).
+
+Many enriched pathways were associated with virulence factors, including quorum sensing, flagellar assembly, and vancomycin resistance. 
+Quorum sensing controls pathways associated with virulence and pathogenicity (e.g. biofilm formation [@parsek2005sociomicrobiology]), but also coordinates many other functions of the human gut microbiota, disruption of which may lead to disturbance of gut homeostasis [@thompson2016chemical; @krzyzek2019challenges]. 
+Of all induced pathways, only quorum sensing was enriched in genes that are more abundant in CD in all four pangenomes suggesting that it may be an entry point for potential therapeutics.
+
+Flagellar assembly was enriched in three of four pangenomes, with 24 KEGG orthologs detected in *C. bolteae* pangenomes and three orthologs detected in each of the *Flavonifractor* pangenomes. 
+Flagella are rotating structures that enable bacterial motility and promote virulence by allowing bacteria to move toward host tissue and participate in biofilm formation, adherence, and invasion [@haiko2013role]. 
+The dominant protein in flagella is flagellin, and monomeric flagellin can activate host pro-inflammatory gene expression via toll-like receptor 5 [@hayashi2001innate]. 
+While increased flagellin is a feature of inflammation-associated gut microbiomes [@tran2019flagellin], flagellin is the immunodominant antigen in CD [@lodes2004bacterial]. 
+Species in Clostridium cluster XIVa, to which *C. bolteae* is a member, produce these flagellins in CD [@duck2007isolation]. 
+These results suggest that *C. bolteae* flagellin may play a critical role in inflammatory maintenance in CD.
+A recent study showed successful reduction of gut flagellin in a mouse model of colitis through immunization with purified flagellin, thereby reducing inflammation, reducing encroachment on host epithelial cells, and reshaping gut microbiota composition [@tran2019flagellin]. 
+This, combined with results our survey, suggests that flagellin purified from *C. bolteae* and *Flovonifractor* may be a candidate target for therapeutic development in CD.
+
+Genes that were more abundant in *C. bolteae* and *F. gnavus* pangenomes were enriched for vancomycin resistance, suggesting that patients with CD are more likely to harbor vancomycin resistant organisms.
+While vancomycin resistance is enriched among annotated KEGG orthologs, we further identified resistant genes using hidden markov models. 
+In both the *C. bolteae* and *F. gnavus* pangenomes, we identify genes encoding the two-component regulatory sequence *vanR* and *vanSB*, as well as *vanB*, *vanX*, and *vanW* in the *C. bolteae* pangenome and *vanY*, *vanH*, and *vanT* in the *F. gnavus* pangenome. 
+Given that CD patients are at an increased risk of hospitalization due to infectious complications of disease, this trend should be further investigated as it may direct empiric antibiotic choices by providers.
+IBD patients are at an increased risk for vancomycin-resistant *Enterococcus* infection [@nguyen2011increased].
+
+Concomitant with profound reduction in oxygen-sensitive species, we observe increased abundance of orthologs involved in oxidative stress response. 
+In the more abundant fraction of both the *C. bolteae* and *F. gnavus* pangenomes, the pentose phosphate pathway and cysteine and methionine metabolism were enriched.
+The oxidative branch of the pentose phosphate pathway regenerates NADPH, while cysteine is a precursor for the antioxidant glutathione.
+Many orthologs that quench reactive oxygen (**Table \@ref(tab:oxstress)**) and nitrogen species (**Table \@ref(tab:nitrostress)**) were also more abundant in these and the *Flavonifractor* pangenomes.
+
+```{r oxstress, echo=FALSE, message=FALSE, warnings=FALSE}
+ox_data <- "species|KEGG_ko|definition
+Faecalicatena gnavus|K00362|nirB; nitrite reductase (NADH) large subunit
+Faecalicatena gnavus|K11717|sufS; cysteine desulfurase / selenocysteine lyase
+Faecalicatena gnavus|K01926|rex; redox-sensing transcriptional repressor
+Faecalicatena gnavus|K01069|gloB, gloC, HAGH; hydroxyacylglutathione hydrolase
+Faecalicatena gnavus|K03671|trxA; thioredoxin 1
+Faecalicatena gnavus|K04565|SOD1; superoxide dismutase, Cu-Zn family
+Faecalicatena gnavus|K14155|patB, malY; cysteine-S-conjugate beta-lyase
+Clostridium_M bolteae|K11717|sufS; cysteine desulfurase / selenocysteine lyase 
+Clostridium_M bolteae|K01069|gloB, gloC, HAGH; hydroxyacylglutathione hydrolase
+Clostridium_M bolteae|K14155|patB, malY; cysteine-S-conjugate beta-lyase
+Clostridium_M bolteae|K03386|PRDX2_4, ahpC; peroxiredoxin 2/4 
+Clostridium_M bolteae|K01758|CTH; cystathionine gamma-lyase
+Clostridium_M bolteae|K03564|BCP, PRXQ, DOT5; thioredoxin-dependent peroxiredoxin
+Clostridium_M bolteae|K00362|nirB; nitrite reductase (NADH) large subunit
+Clostridium_M bolteae|K01926|rex; redox-sensing transcriptional repressor
+Clostridium_M bolteae|K04565|SOD1; superoxide dismutase, Cu-Zn family 
+Clostridium_M bolteae|K03676|grxC, GLRX, GLRX2; glutaredoxin 3
+Flavonifractor sp000508885|K01759|GLO1, gloA; lactoylglutathione lyase 
+Flavonifractor sp000508885|K03671|trxA; thioredoxin 1
+Flavonifractor sp000508885|K01758|CTH; cystathionine gamma-lyase
+Flavonifractor plautii|K01759|GLO1, gloA; lactoylglutathione lyase
+Flavonifractor plautii|K01758|CTH; cystathionine gamma-lyase
+Flavonifractor plautii|K14155|patB, malY; cysteine-S-conjugate beta-lyase"      
+df <- read.delim(textConnection(ox_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, col.names = c("pangenome", "KEGG ortholog", "description"), 
+      caption = "KEGG orthologs involved in oxidative stress response annotated in genes from pangenomes that were more abundant in IBD. KEGG orthologs are only displayed if they were only annotated among the more abundant genes, not annotated amoung both the more abundant and less abundant genes in a pangenome.") %>%
+  kable_styling(font_size = 9)
+```
+
+```{r nitrostress, echo=FALSE, message=FALSE, warnings=FALSE}
+nitro_data <- "species|KEGG_ko|definition
+Faecalicatena gnavus|K00362|nirB; nitrite reductase (NADH) large subunit 
+Faecalicatena gnavus|K05601|hcp; hydroxylamine reductase
+Clostridium_M bolteae|K03386|PRDX2_4, ahpC; peroxiredoxin 2/4 
+Clostridium_M bolteae|K00362|nirB; nitrite reductase (NADH) large subunit
+Clostridium_M bolteae|K05601|hcp; hydroxylamine reductase"      
+df <- read.delim(textConnection(nitro_data), header=T, sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, c("pangenome", "KEGG ortholog", "description"),
+      caption = "KEGG orthologs involved in oxidative stress response caused by reactive nitrogen species and annotated in strains that were more abundant in IBD. KEGG orthologs were only displayed if they were only annotated amoung the more abundant genes, not annotated amoung both the more abundant and less abundant genes in a pangenome.") %>%
+  kable_styling(font_size = 9)
+```
+
+We investigated whether the gene cluster involved in biosynthesis of the inflammatory polysaccharide synthesized by *F. gnavus* was significantly more abundant in CD [@henke2019ruminococcus]. 
+We identified 19 of 23 ORFs in the *F. gnavus* pangenome that matched the putative genes in the cluster, all of which were more abundant in CD. 
+Further, two subsets, one containing five ORFs and one contain seven ORFs, were co-located on two contiguous sequences, indicating these genes do form a biosynthetic cluster.
+These results suggest that our k-mer analysis detected the same inflammatory clade of *F. gnavus* as has been previously detected [@hall2017; @henke2019ruminococcus].
+
+### Fractions of pangenomes are more abundant in but not exclusive to IBD
+
+Given the signatures of strain enrichment we detected in metagenomes from CD and UC, we next investigated whether there is a disease-specific pangenome in CD or UC -- e.g. whether there are genes from a species that are only observed in IBD.
+Using reads that were assembled into each pangenome, we mapped reads against each pangenome to produce an abundance profile for each metagenome.
+We generated accumulation curves for genes using presence/absence information from mapped reads.
+We extended this analysis to include all 41 genomes we detected as important for IBD subtype classification.
+
+In general, we found no evidence for disease-specific pangenomes among the 41 pangenomes.
+Instead, in almost all pangenomes all genes are observed in at least some some CD, UC, and nonIBD metagenomes.
+On average, 152 genes were unobserved in UC, 149 in CD, and 72 in nonIBD per pangenome, accounting for less than 1% of genes in the pangenom (**Table \@ref(tab:pangenomeaccum)**).
+These results in part explain heterogeneous study findings in previous IBD gut microbiome investigations.
+
+```{r pangenomeaccum, echo = F, warning = F, message = F, include = T}
+pangenome_accum <- "pangenome                         | pangenome_genes | CD   | UC   | nonIBD 
+Faecalibacterium prausnitzii_K    | 29570           | 224  | 163  | 90     
+Lachnospira sp000437735           | 29206           | 231  | 354  | 226 
+Lachnospira sp900316325           | 27905           | 279  | 307  | 135 
+Lawsonibacter                     | 26656           | 192  | 151  | 109 
+Bacteroides ovatus                | 26199           | 91   | 133  | 61 
+Faecalibacterium                  | 25543           | 77   | 57   | 73 
+CAG-1024 sp000432015              | 23681           | 2089 | 1655 | 78
+Acetatifactor sp900066565         | 22470           | 66   | 99   | 79 
+Faecalibacterium prausnitzii_G    | 22462           | 48   | 52   | 46 
+Faecalibacterium prausnitzii_D    | 21947           | 41   | 38   | 41
+Gemmiger formicilis               | 21058           | 139  | 105  | 125  
+Faecalibacterium prausnitzii_D    | 19905           | 22   | 37   | 33 
+Flavonifractor plautii            | 18721           | 96   | 117  | 71 
+Faecalibacterium prausnitzii_G    | 18432           | 30   | 29   | 41 
+Lachnospira eligens_B             | 18420           | 330  | 259  | 74
+Acetatifactor sp900066365         | 17740           | 103  | 123  | 63
+Roseburia inulinivorans           | 17721           | 96   | 153  | 82 
+Oscillibacter sp900066435         | 17074           | 78   | 60   | 49
+Clostridium_M bolteae             | 16822           | 28   | 171  | 194 
+Bacteroides_B massiliensis        | 15500           | 110  | 200  | 105 
+Flavonifractor sp000508885        | 14947           | 75   | 98   | 57 
+Faecalicatena gnavus              | 13958           | 44   | 278  | 176 
+CAG-45 sp900066395                | 13818           | 92   | 108  | 66
+Gemmiger sp003476825              | 13419           | 102  | 106  | 101
+Agathobacter faecis               | 13311           | 70   | 121  | 52
+Blautia_A sp900066165             | 13274           | 38   | 78   | 48
+UBA11774 sp003507655              | 12775           | 85   | 129  | 74
+CAG-170                           | 12339           | 113  | 61   | 24
+Ruminococcus_E bromii_B           | 11627           | 314  | 227  | 61
+Agathobacter rectale              | 11368           | 60   | 123  | 41
+TF01-11 sp003529475               | 9773            | 46   | 63   | 30
+CAG-81 sp900066785                | 9040            | 19   | 61   | 37  
+Ruminococcus_D bicirculans        | 8749            | 97   | 92   | 19
+Acutalibacter sp000435395         | 8715            | 63   | 30   | 91
+Lachnospira eligens_B             | 8561            | 144  | 52   | 28
+ER4 sp000765235                   | 8517            | 76   | 45   | 20
+Alistipes putredinis              | 8173            | 48   | 28   | 15
+Prevotella copri                  | 7430            | 95   | 107  | 37 
+Anaeromassilibacillus sp002159845 | 5435            | 28   | 37   | 21
+Ruminiclostridium_E siraeum       | 4801            | 122  | 56   | 19     
+Romboutsia timonensis             | 4660            | 27   | 86   | 153"
+df <- read.delim(textConnection(pangenome_accum), header=T, sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, col.names = c("pangenome", "number of genes in pangenome", "CD", "UC", "nonIBD"),
+      caption = "Number of genes assembled in each pangenome, with the number of genes not observed in each pangenome in CD, UC, or nonIBD.") %>%
+  kable_styling(font_size = 9)
+```
+
+While we found no evidence of a general disease-specific pangenome, we tested whether the biosynthetic cluster for the inflammatory polysaccharide produced by *F. gnavus* occurred in nonIBD as it had previously only been identified in CD [@henke2019ruminococcus].
+An average of more than 100 reads mapped per gene in the cluster in 10 of 213 nonIBD metagenomes.
+While more abundant in CD, this cluster is also identifiable within healthy human gut microbiomes, further supporting the lack of disease-specific pangenomes. 
+
+While the majority of genes were observed in CD, UC, and nonIBD, IBD metagenomes harbored fewer genes than nonIBD metagenomes  (**Table \@ref(tab:pangenomemean)**).
+When we counted the number of genes within each pangenome with mapped reads, 39 of 41 pangenomes for CD and 37 of 41 pangenomes for UC had a significantly lower number of genes observed per metagenome than nonIBD (ANOVA p < 0.05, Tukey's HSD p < 0.05). 
+Only *C. bolteae* in CD and *Romboutsia timonensis*, *Anaeromassilibacillus*, and *Actulibacter* in UC had a significantly 
+Only *F. gnavus* showed no significant difference in the number of genes per sample across all groups. 
+
+```{r pangenomemean, echo = F, warning = F, message = F, include = T}
+pangenome_mean <- "pangenome | CD    | UC    | nonIBD 
+Faecalibacterium prausnitzii_K    | 8905  | 13425 | 18283  
+Faecalibacterium                  | 8853  | 13192 | 17241  
+Faecalibacterium prausnitzii_D    | 8492  | 12445 | 15656
+Faecalibacterium prausnitzii_G    | 8746  | 12316 | 15523
+Bacteroides ovatus                | 11006 | 11876 | 15265
+Lachnospira sp000437735           | 8050  | 10649 | 14567
+Faecalibacterium prausnitzii_D    | 7752  | 11425 | 14376
+Acetatifactor sp900066565         | 7177  | 10092 | 13985
+Lawsonibacter                     | 7212  | 10476 | 13825
+Lachnospira sp900316325           | 6844  | 9363  | 13207
+Faecalibacterium prausnitzii_G    | 7172  | 10361 | 13146
+Gemmiger formicilis               | 5611  | 8076  | 12303
+CAG-1024 sp000432015              | 5263  | 7760  | 11521
+Acetatifactor sp900066365         | 5572  | 7766  | 11184
+Roseburia inulinivorans           | 5306  | 7510  | 10248
+Oscillibacter sp900066435         | 5824  | 8056  | 9486
+Lachnospira eligens_B             | 5035  | 7292  | 9437
+Flavonifractor plautii            | 6825  | 8335  | 9391
+Gemmiger sp003476825              | 3658  | 5306  | 8088
+Blautia_A sp900066165             | 4692  | 6599  | 8012
+Bacteroides_B massiliensis        | 5241  | 6411  | 7860
+Agathobacter faecis               | 4236  | 5878  | 7857
+CAG-45 sp900066395                | 3806  | 5280  | 7679
+Agathobacter rectale              | 4250  | 5687  | 7414
+UBA11774 sp003507655              | 3569  | 4938  | 6992
+Flavonifractor sp000508885        | 5860  | 6778  | 6917
+CAG-170                           | 1614  | 3273  | 6175
+Faecalicatena gnavus              | 5554  | 5558  | 5910
+Ruminococcus_E bromii_B           | 2854  | 4006  | 5564
+TF01-11 sp003529475               | 2576  | 3604  | 5493
+Alistipes putredinis              | 2555  | 3198  | 5060
+ER4 sp000765235                   | 1665  | 3020  | 5002
+Lachnospira eligens_B             | 2220  | 3703  | 4696
+CAG-81 sp900066785                | 2677  | 3326  | 4544
+Clostridium_M bolteae             | 6199  | 4870  | 4514
+Ruminococcus_D bicirculans        | 1905  | 3155  | 4483
+Acutalibacter sp000435395         | 1445  | 2840  | 2592
+Anaeromassilibacillus sp002159845 | 1106  | 2024  | 2250
+Ruminiclostridium_E siraeum       | 625   | 1438  | 2172
+Prevotella copri                  | 1117  | 1524  | 1961
+Romboutsia timonensis             | 718   | 1561  | 1262"
+df <- read.delim(textConnection(pangenome_mean), header=T, sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, col.names =  c("pangenome", "CD", "UC", "nonIBD"),
+      caption = "Mean number of genes observed per metagenome in each pangenomes for each group. Rounded to the neared digit.") %>%
+  kable_styling(font_size = 9)
+```
+
+## Discussion
+
+IBD is a heterogeneous disease characterized by periods of activity and remission. 
+While the underlying etiology remains poorly understood, IBD arises from a complex interaction between host genetics, environment, and the gut microbiome. 
+Here we present a new method to examine microbial associations of disease, and using this method, uncover signatures of IBD subtype. 
+These signatures demonstrate consistent loss of diversity of specific microorganisms, particularly in CD. 
+Meanwhile, our analysis was consistent with strain enrichment in four species in CD and two in UC, potentially indicating niche partitioning in response to IBD-associated perturbations.
+The conserved signatures we detect warrant further research and may yield new therapeutics for IBD treatment.
+
+While we found conserved signatures in IBD subtype, we found no evidence for disease-specific microbiomes, or pangenomes of the organisms that comprise them. 
+The observation that almost all genes within a pangenome occur in CD, UC, and nonIBD suggests the presence of ecotypes -- subspecies that are adapted to different environments -- rather than pathotypes -- subspecies associated with a specific disease.
+Similarly, while a few strains appear to be enriched in IBD microbiomes, these strains were all detected in nonIBD at low frequency. 
+These patterns in part explain the inconsistent results generated in IBD subtype characterization, where no consistent microbiological signal has emerged in human gut microbiomes other than loss of diversity (reviewed in @kumar2019integrating). 
+However, the results presented herein demonstrate the need for reference-free analysis of metagenomes. 
+Strain-level resolution was essential for the detection of enriched organisms, but this resolution is precluded by reference-based methods. 
+Recent large-scale assembly efforts have dramatically improved our catalog of diversity for human microbiomes [@pasolli2019; @nayfach2019; @almeida2019], however many sequences that were signatures of IBD were not in these databases. 
+K-mer-based analysis combined with assembly graph queries provides a necessary window into strain-level dynamics in metagenomes. 
+
+Our models consistently performed the most poorly on the iHMP cohort. 
+The iHMP tracked the emergence and diagnosis of IBD through time series profiling of emergent cases [@lloyd2019]. 
+We selected the first sample in each time series for this analysis. 
+Given that our model performed poorly on these samples, this may suggest that disease onset is a distinct biological process. 
+One avenue of future research is analysis of these time series samples for emergence of disease signatures. 
+
+While k-mer-based analysis revealed signatures of IBD subtype, 9.1% of shared k-mers were uncharacterized by reference databases or assembly graph queries. 
+These k-mers may represent strain variants of the microbial core we detected, or may be novel sequences from other organisms, plasmids, or viruses. 
+Targeted graph-based queries may reveal the identity of these elements and their relationship to IBD. 
+
+While we apply our pipeline to IBD classification, it is extensible to other large meta cohorts of metagenomic sequencing data. 
+This method may be particularly suitable for diseases such as colorectal cancer, where a recent meta-analysis using a marker gene approach was successful in classifying colorectal samples from healthy controls [@wirbel2019].
+Our method may bring strain-level resolution and generate hypothesis for further research.
+
+## Methods
+
+All code associated with our analyses is available at www.github.com/dib-lab/2020-ibd/.
+
+### IBD metagenome data acquisition and processing
+
+We searched the NCBI Sequence Read Archive and BioProject databases for shotgun metagenome studies that sequenced fecal samples from humans with Crohn's disease, ulcerative colitis, and healthy controls. 
+We included studies sequenced on Illumina platforms with paired-end chemistries and with sample libraries that contained greater than one million reads. 
+For time series intervention cohorts, we selected the first time point to ensure all metagenomes came from treatment-naive subjects. 
+
+We downloaded metagenomic FASTQ files from the European Nucleotide Archive using the "fastq_ftp" link and concatenated fast files annotated as the same library into single files. 
+We also downloaded iHMP samples from idbmdb.org.
+We used Trimmomatic (version 0.39) to adapter trim reads using all default Trimmomatic paired-end adapter sequences (`ILLUMINACLIP:{inputs/adapters.fa}:2:0:15`) and lightly quality-trimmed the reads (`MINLEN:31 LEADING:2 TRAILING:2 SLIDINGWINDOW:4:2`) [@bolger2014]. 
+We then removed human DNA using BBMap and a masked version of hg19 [@bushnell2014]. 
+Next, we trimmed low-abundance k-mers from sequences with high coverage using khmer's `trim-low-abund.py` [@crusoe2015].  
+
+Using these trimmed reads, we generated scaled MinHash signatures for each library using sourmash (k-size 31, scaled 2000, abundance tracking on) [@brown2016]. 
+Scaled MinHash sketching produces compressed representations of k-mers in a metagenome while retaining the sequence diversity in a sample [@pierce2019].
+This approach creates a consistent set of k-mers across samples by retaining the same k-mers when the same k-mers were observed. 
+This enables comparisons between metagenomes.
+We refer to scaled MinHash sketches as *signatures*, and to each sub-sampled k-mer in a signature as a *k-mer*. 
+At a scaled value of 2000, an average of one k-mer will be detected in each 2000 base pair window, and 99.8% of 10,000 base pair windows will have at least one k-mer representative. 
+We selected a k-mer size of 31 because of its species-level specificity [@koslicki2016].
+We retained all k-mers that were present in multiple samples. 
+
+### Principle Coordinates Analysis
+
+We used jaccard distance and cosine distance implemented in `sourmash compare` to pairwise compare scaled MinHash signatures. 
+We then used the `dist()` function in base R to compute distance matrices. 
+We used the `cmdscale()` function to perform principle coordinate analysis [@gower1966]. 
+We used ggplot2 and ggMarginal to visualize the principle coordinate analysis [@wickham2019]. 
+To test for sources of variation in these distance matrices, we performed PERMANOVA using the `adonis` function in the R vegan package [@oksanen2010].
+The PERMANOVA was modeled as `~ diagnosis + study accession + library size + number of k-mers`.
+
+### Random forests classifiers
+
+We built random forests classifier to predict CD, UC, and non-IBD status using scaled MinHash signatures (k-mer models), marker genes in the shared 41 genomes (marker gene models), signatures from reads that were detected as marker genes (k-mer models of marker genes), and marker genes in the full metagenome (full marker gene models).
+ 
+For models from signatures, we transformed sourmash signatures into a k-mer abundance table where each metagenome was a sample, each k-mer was a feature, and abundances were recorded for each k-mer for each sample. 
+We normalized abundances by dividing by the total number of k-mers in each scaled MinHash signature. 
+We then used a leave-one-study-out validation approach where we trained six models, each of which was trained on five studies and validated on the sixth. 
+To build each model, we first performed vita variable selection on the training set as implemented in the Pomona and ranger packages [@degenhardt2017; @wright2015]. 
+Vita variable selection reduces the number of variables (e.g. k-mers) to a smaller set of predictive variables through selection of variables with high cross-validated permutation variable importance [@janitza2018].
+It is based on permutation of variable importance, where p-values for variable importance are calculated against a null distribution that is built from variables that are estimated as non-important [@janitza2018].
+This approach retains important variables that are correlated [@janitza2018; @seifert2019], which is desirable in omics-settings where correlated features are often involved in a coordinated biological response, e.g. part of the same operon, pathways, or genome [@stuart2003gene; @sabatti2002co]. 
+Using this smaller set of k-mers, we then built an optimized random forests model using tuneRanger [@probst2019]. 
+We evaluated each validation set using the optimal model, and extracted variable importance measures for each k-mer for subsequent analysis. 
+To make variable importance measures comparable across models, we normalized importance to 1 by dividing variable importance by the total number of k-mers in a model and the total number of models.  
+
+For the marker gene models, we generated marker gene abundances for 14 ribosomal marker genes and 16S rRNA using singleM [@woodcroft2018singlem].
+We then followed the same model building procedure as the k-mer models. 
+ 
+### Anchoring predictive k-mers to genomes
+
+We used sourmash `gather` with parameters `k 31` and `--scaled 2000` to anchor predictive k-mers to known genomes [@brown2016]. 
+Sourmash `gather` searches a database of known k-mers for matches with a query [@pierce2019].
+We used the sourmash GenBank database (2018.03.29, https://osf.io/snphy/), and built three additional databases from medium- and high-quality metagenome-assembled genomes from three human microbiome metagenome reanalysis efforts (https://osf.io/hza89/) [@pasolli2019; @nayfach2019; @almeida2019].
+In total, approximately 420,000 microbial genomes and metagenome-assembled genomes were represented by these four databases. 
+We used the sourmash `lca` commands against the GTDB taxonomy database to taxonomically classify the genomes that contained predictive k-mers.
+To calculate the cumulative variable importance attributable to a single genome, we used an iterative winner-takes-all approach.
+The genome with the largest fraction of predictive k-mers won the variable importance for all k-mers contained within its genome.
+These k-mers were then removed, and we repeated the process for the genome with the next largest fraction of predictive k-mers. 
+
+To identify k-mers that were predictive in at least five of six models, we took the union of predictive k-mers from all combinations of five models, as well as from the union of all six models.
+We refer to these k-mers as shared predictive k-mers.
+We anchored variable importance of these shared predictive k-mers to known genomes using sourmash `gather` as above. 
+
+### Compact de Bruijn graph queries for predictive genes and genomes
+
+To annotate k-mers with functional potential, we first extracted open reading frames (ORFs) from the shared 41 genomes using prokka, and annotated ORFs with EggNog [@seemann2014prokka; @huerta2019eggnog].
+When then used spacegraphcats `multifasta_query` to create a k-mer:gene map.
+Spacegraphcats retrieves k-mers in the compact de Bruijn graph neighborhood of a query gene, and hashing these k-mers via sourmash generates a hash:gene map [@brown2020exploring; @brown2016]. 
+Because genomes with shared 31-mers may annotate the same hash, we allowed k-mers to be annotated multiple times. 
+This was particularly appropriate for k-mers from highly conserved regions, e.g. 16S ribosomal RNA.
+
+We used spacegraphcats `search` to retrieve k-mers in the compact de Bruijn graph neighborhood of the shared genomes [@brown2020exploring]. 
+We then used spacegraphcats `extract_reads` to retrieve the reads and `extract_contigs` to retrieve unitigs in the compact de Bruijn graph that contained those k-mers, respectively.
+These reads were used to generate marker gene abundances for the 41 shared genomes for the marker gene random forests models.
+ 
+### Differential k-mer abundance analysis
+
+To determine whether shared k-mers were differentially abundant from nonIBD in UC or CD, we used corncob [@martin2020modeling].
+We used all k-mer abundances from sourmash signatures to determine k-mer library size, and then compared k-mer abundances between disease groups using the likelihood ratio test with the formula `study_accession + diagnosis` and the null formula `study_accession` [@martin2020modeling]. 
+We considered genes with p values < 0.05 after Bonferonni correction as statistically significant. 
+We performed enrichment analysis using the R package clusterProfiler [@yu2012clusterprofiler]. 
+
+### Pangenome analysis
+
+**Pangenome signatures** To evaluate the k-mers recovered by pangenome neighborhood queries, we generated sourmash signatures from the unitigs in each query neighborhood. 
+We merged signatures from the same query genome, producing 41 pangenome signatures. 
+We indexed these signatures to create a sourmash gather database. 
+To estimate how query neighborhoods increased the identifiable fraction of predictive k-mers, we ran sourmash `gather` with the pangenome database, as well as the GenBank and human microbiome metagenome databases. 
+To estimate how query neighborhoods increased the identifiable fraction of shared predictive k-mers, we ran sourmash `gather` with the pangenome database alone.
+We anchored variable importance of the shared predictive k-mers to known genomes using sourmash `gather` results as above. 
+
+**Pangenome assembly** We used diginorm on each spacegraphcats query neighborhood implemented in khmer as `normalize-by-median.py` with parameters `-k 20 -C 20` [@crusoe2015]. 
+We then assembled each neighborhood from a single query with `megahit` using default parameters [@li2015megahit], and annotated each assembly using prokka [@seemann2014prokka].
+We used CD-HIT to cluster nucleotide sequences within a pangenome at 90% identity and retained the representative sequence [@fu2012cd].
+We annotated representative sequences with EggNog [@huerta2019eggnog].
+We used Salmon to quantify the number of reads aligned to each representative gene sequence [@patro2017salmon], and BWA to quantify the number of mapped and unmapped reads [@li2013aligning].
+
+To identify potential genes encoding vancomycin resistance, we performed hidden markov model searches against the pangenome. 
+We used the `hmmscan` command from HMMER against the Resfam database with a threshold of 200 [@hmmer; @gibson2015improved].
+
+### Construction of human microbiome metagenome assembled genome databases
+
+While GenBank contains hundreds of thousands of isolate and metagenome-assembled genomes, we augmented the number of genomes by creating sourmash databases for all medium- and high-quality metagenome-assembled genomes from three recent human microbiome metagenome *de novo* assembly efforts [@pasolli2019; @nayfach2019; @almeida2019]. 
+The databases are available at in the OSF repository, "Comprehensive Human Microbiome Sourmash Databases" at the URL https://osf.io/hza89/.
+While we are aware that contamination in both GenBank and from these studies could introduce contamination into our analysis, we reasoned that the increase we observed in identifiable k-mers when we did not restrict ourselves to RefSeq was worth the trade.  
+
+To generate the databases, we downloaded the medium- and high-quality metagenome-assembled genomes and used sourmash `compute` with parameters `k 21,31,51`, `--track-abundance`, and `--scaled 2000`. 
+We then used sourmash `index` to generate databases for `k = 31`.
+Below we detail the contents of each database. 
+
++ @pasolli2019: contains 70,178 high- and 84,545 medium-quality MAGs assembled from 9,428 human microbiome samples. Samples originate from stool (7,783), oral cavity (783), skin (503), vagina (88), and maternal milk (9). Original Data Download: http://segatalab.cibio.unitn.it/data/Pasolli_et_al.html
++ @almeida2019: contains 40,029 high- and 65,671 medium-quality MAGs assembled from 11,850 human microbiome samples. All samples originate from stool. Original Data Download: ftp://ftp.ebi.ac.uk/pub/databases/metagenomics/umgs_analyses/mags-gut_qs50.tar.gz
++ @nayfach2019: contains 24,345 high- and 36,319 medium-quality MAGs assembled from 3,810 human gut microbiome samples. Original Data Download: https://github.com/snayfach/IGGdb
+
+### Description of IBD metagenome study cohorts
+
+Below we present a description of each of the six cohorts used in this meta analysis.
+Each description is presented as was found in the original publication of each cohort.
+
+
+**iHMP** [@lloyd2019]: 
+
+> Five medical centres participated in the IBDMDB: Cincinnati Children’s Hospital, Emory University Hospital, Massachusetts General Hospital, Massachusetts General Hospital for Children, and Cedars-Sinai Medical Center. 
+> Patients were approached for potential recruitment upon presentation for routine age-related colorectal cancer screening, work up of other gastrointestinal (GI) symptoms, or suspected IBD, either with positive imaging (for example, colonic wall thickening or ileal inflammation) or symptoms of chronic diarrhoea or rectal bleeding. 
+> Participants could not have had a prior screening or diagnostic colonoscopy. 
+> Potential participants were excluded if they were unable to or did not consent to provide tissue, blood, or stool, were pregnant, had a known bleeding disorder or an acute gastrointestinal infection, were actively being treated for a malignancy with chemotherapy, were diagnosed with indeterminate colitis, or had undergone a prior, major gastrointestinal surgery such as an ileal/colonic diversion or j-pouch. 
+> Upon enrollment, an initial colonoscopy was performed to determine study strata. 
+> Subjects not diagnosed with IBD based on endoscopic and histopathologic findings were classified as ‘non-IBD’ controls, including the aforementioned healthy individuals presenting for routine screening, and those with more benign or non-specific symptoms. 
+> This creates a control group that, while not completely ‘healthy’, differs from the IBD cohorts specifically by clinical IBD status. 
+> Differences observed between these groups are therefore more likely to constitute differences specific to IBD, and not differences attributable to general GI distress. 
+
+**PRJEB2054** [@qin2010]: 
+
+> As part of the MetaHIT (Metagenomics of the Human Intestinal Tract) project, we collected faecal specimens from 124 healthy, overweight and obese individual human adults, as well as inflammatory bowel disease (IBD) patients, from Denmark and Spain.
+
+**SRP057027** [@lewis2015]:
+ 
+> Children and young adults less than 22 years of age were enrolled at the time of initiation of EN or anti-TNF therapy for treatment of active CD (defined as the Pediatric Crohn's Disease Activity Index [PCDAI] >10) at The Hospital for Sick Children in Toronto, ON, Canada; IWK Health Centre, Halifax, NS, Canada; and the Children's Hospital of Philadelphia, Pennsylvania. 
+> Participants in this observational cohort study were prescreened for eligibility and recruited from clinic or during inpatient hospitalization. Exclusion criteria included presence of an ostomy, treatment with probiotics within 2 weeks of initiating EN, treatment with anti-TNF therapy within 8 weeks of starting EN, or treatment with EN within 1 week of initiating anti-TNF therapy. 
+> The study protocol was approved by the institutional review boards at all participating institutions. 
+> Informed consent was obtained from all young adults and the parents/guardians of children less than 18 years of age.
+
+**PRJNA385949** [@hall2017]: 
+
+> Samples from the PRISM study, collected at Massachusetts General Hospital: A subset of the PRISM cohort was selected for longitudinal analysis. 
+> A total of 15 IBD cases (nine CD, five UC, one indeterminate colitis) were enrolled in the longitudinal stool study (LSS). 
+> Three participants with gastrointestinal symptoms that tested negative for IBD were included as a control population. 
+> Enrollment in the study did not affect treatment. 
+> Stool samples were collected monthly, for up to 12 months. 
+> The first stool sample was taken after treatment had begun. 
+> Comprehensive clinical data for each of the participants was collected at each visit. 
+> At each collection, a subset of participants were interviewed to determine their disease activity index, the Harvey-Bradshaw index for CD participants and the simple clinical colitis activity index (SCCAI) for UC participants.
+> Samples collected at Emory University: To increase the number of participants in our analysis, a subset of the pediatric cohort STiNKi was selected for whole metagenome sequencing including five individuals with UC and nine healthy controls.
+> All selected UC cases were categorized as non-responders to treatment.
+> Stool samples were collected approximately monthly for up to 10 months. 
+> The first sample from participants in the STiNKi cohort is before treatment started, and subsequent samples are after treatment started. 
+> Stool collection and DNA extraction methods are detailed in Shaw et al.
+
+**PRJNA400072**  [@franzosa2019]:
+
+> PRISM cohort description and sample handling: PRISM is a referral centre-based, prospective cohort of IBD patients; 161 adult patients (>18 years old) enrolled in PRISM and diagnosed with CD, UC, and non-IBD (control) were selected for this study, with diagnoses based on standard endoscopic, radiographical and histological criteria. 
+> The PRISM research protocols were reviewed and approved by the Partners Human Research Committee (re. 2004-P-001067), and all experiments adhered to the regulations of this review board. 
+> PRISM patient stool samples were collected at the MGH gastroenterolgy clinic and stored at -80C before DNA was extracted. 
+> 
+> Validation cohort description and sample handling: The validation cohort consisted of 65 patients enrolled in two distinct studies form the Netherlands; 22 controls were enrolled in the LifeLines DEEP general population study and 43 patients with IBD were enrolled in a study at the Department of Gastroenterology and Hematology at the University Medical Center Groningen. 
+> Patients enrolled in both studies collected stool using the same protocol: a single stool sample was collected at home and then frozen within 15 min in a conventional freezer. 
+> A research nurse visited all participants at home to collect home-frozen stool samples, which were then transported and stored at -80C. 
+> The stool samples were kept frozen before DNA was extracted.
+
+**PRJNA237362** [@gevers2014]: 
+
+> A total of 447 children and adolescents (<17 years) with newly diagnosed CD and a control population composed of 221 subjects with noninflammatory conditions of the gastrointestinal tract were enrolled to the RISK study in 28 participating pediatric gastroenterology centers in North America between November 2008 and January 2012.
+
+
+```{r genomes, echo=FALSE, message=FALSE, warnings=FALSE}
+genomes_data <- "
+ genome                                       | GTDB                              | NCBI            
+ ERS235530_10                                 | CAG-1024 sp000432015              | Clostridium sp. CAG:1024
+ ERS235531_43                                 | Faecalibacterium prausnitzii_F    | 
+ ERS235603_16                                 | Agathobacter rectale              | [Eubacterium] rectale
+ ERS396297_11                                 | Lachnospira eligens_B             | [Eubacterium] eligens 
+ ERS396519_11                                 | Lawsonibacter asaccharolyticus    | Clostridium phoceensis 
+ ERS473255_26                                 | Faecalibacterium prausnitzii_G    | 
+ ERS537218_9                                  | Gemmiger sp003476825              | Faecalibacterium sp. UBA2087 
+ ERS537235_19                                 | Bacteroides_B massiliensis        |  
+ ERS537328_30                                 | Faecalibacterium prausnitzii_K    |    
+ ERS537353_12                                 | Flavonifractor                 |  
+ ERS608524_37                                 | Gemmiger formicilis               |  
+ ERS608576_22                                 | Ruminococcus_E bromii_B           |  
+ GCF_000371685.1_Clos_bolt_90B3_V1_genomic    | Clostridium_M bolteae             | Clostridium bolteae 90B3
+ GCF_000508885.1_ASM50888v1_genomic           | Flavonifractor sp000508885        | Clostridiales bacterium VE202-03
+ GCF_001405615.1_13414_6_47_genomic           | Agathobacter faecis               | Roseburia faecis 2789STDY5608863
+ GCF_900036035.1_RGNV35913_genomic            | Faecalicatena gnavus              | [Ruminococcus] gnavus
+ LeChatelierE_2013__MH0074__bin.19             | CAG-45 sp900066395               | 
+ LiJ_2014__O2.UC28-1__bin.61                   | Ruminiclostridium_E siraeum      | [Eubacterium] siraeum 
+ LiSS_2016__FAT_DON_8-22-0-0__bin.28           | CAG-170 sp000432135              | Firmicutes bacterium CAG:124
+LoombaR_2017__SID1050_bax__bin.11             | Anaeromassilibacillus sp002159845 | Anaeromassilibacillus sp. An250 
+NielsenHB_2014__MH0094__bin.44                | Prevotella copri                |   
+QinJ_2012__CON-091__bin.20                    | Faecalibacterium prausnitzii_G  | 
+SRR4305229_bin.5                              | Roseburia inulinivorans         |  
+SRR5127401_bin.3                              | UBA11774 sp003507655            |  
+SRR5558047_bin.10                             | Alistipes putredinis            |  
+SRR6028281_bin.3                              | Lachnospira eligens_B           | [Eubacterium] eligens
+SRS075078_49                                 | TF01-11 sp003529475              | Clostridium sp. CAG:75        
+SRS103987_37                                 | ER4 sp000765235                  | Oscillibacter sp. ER4
+SRS104400_110                                | Lachnospira sp900316325          |          
+SRS143598_15                                 | Lachnospira sp000437735          | 
+SRS1719112_8                                 | Oscillibacter sp900066435        |   
+SRS1719498_9                                 | Acetatifactor sp900066565        | Clostridium 
+SRS1719577_6                                 | Faecalibacterium prausnitzii_D   |  
+SRS1735506_4                                 | Bacteroides ovatus               |  
+SRS1735645_19                                | Acetatifactor sp900066365        | Firmicutes bacterium CAG:65
+SRS294916_20                                 | Romboutsia timonensis            |      
+SRS476209_42                                 | Ruminococcus_D bicirculans       |  
+VatanenT_2016__G80445__bin.9                  | Faecalibacterium prausnitzii_D  | 
+VogtmannE_2016__MMRS43563715ST-27-0-0__bin.70 | CAG-81 sp900066785              | uncultured Clostridium sp.
+XieH_2016__YSZC12003_37172__bin.63            | Acutalibacter sp000435395       | Firmicutes bacterium CAG:94 
+ZeeviD_2015__PNP_Main_232__bin.27             | Blautia_A sp900066165           | uncultured Blautia sp."      
+df <- read.delim(textConnection(genomes_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
+row.names(df)<-NULL
+kable(df, format = "latex", booktabs = T, 
+      caption = "Identifiers, GTDB and NCBI taxonomy for the 41 shared genomes. Species names that are the same in the GTDB and NCBI taxonomy are blank in the NBCI column. Genome sequence FASTA files are available for download at https://osf.io/ungza/.") %>%
+  kable_styling(font_size = 7)
+```
+
+
+
+
+```{r confusionplts1, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.width=4, fig.cap="Confusion matrices for leave-one-study-out random forests models evaluated on the validation set. **A** K-mer model built from all k-mers in the metagenomes and **B** full marker gene model calculated from all reads in the metagenome."}
+knitr::include_graphics('figure/ibdfigS2_1.pdf')
+```
+
+```{r confusionplts2, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.width=4, fig.cap="Confusion matrices for leave-one-study-out random forests models evaluated on the validation set. **A** Core marker gene model built from marker genes only in the neighborhoods of the 41 shared genomes. **B** k-mer model of marker genes k-mers abstracted from marker genes only in the neighborhoods of the 41 shared genomes."}
+knitr::include_graphics('figure/ibdfigS2_2.pdf')
+```
+
+
+```{r upset, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.width=4, fig.cap="K-mer models share a large fraction of predictive k-mers. Upset plot depicting intersections of sets of k-mers as well as the cumulative normalized variable importance of those k-mers in the optimized random forests classifiers. Each classifier is labeled by the left-out validation study.", out.width="400px"}
+knitr::include_graphics('figure/ibdfigS3.pdf')
+```
+
+
+```{r assembled, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE,fig.cap="**A** A large fraction of shared k-mers do not assemble. The largest fraction segregates to those that were less abundant in CD than nonIBD. **B** Unassembled shared k-mers were distributed across the 41 shared genomes."}
+knitr::include_graphics("figure/ibdfigS6.pdf")
+```
+
+```{r hashcontentsupp, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE,fig.cap="More abundant k-mers in CD were enriched in metabolic pathways and contain few marker genes. Only pathways that were significantly enriched in two of the four genomes are depicted."}
+knitr::include_graphics("figure/ibdfigS7.pdf")
+```

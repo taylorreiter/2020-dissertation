@@ -229,7 +229,7 @@ This is of particular interest because iron (Fe2+/Fe3+) is a catalytic redox cof
 As such, in combination with oxygen and other factors that contribute to redox balance, iron concentration may substantially impact wine outcomes both via wine chemistry and through *S. cerevisiae* metabolism.
 
 ```{r figs8, echo = F, message = F, warning = F, fig.cap = "**A)** Brix measurements throughout fermentation in the 2017 and 2019 vintages. Fermentations from OR1 are demarcated with shapes. Brix reflects the total soluble solids in a fermentation and is a proxy for sugar concentration in fermentations. Brix start high (0 hours, 25 brix) and decrease until the fermentation is dry (>100 hours, 0 brix). **B)** Iron concentration in final wines from different vineyards in the 2017 and 2019 vintages."}
-knitr::include_graphics("figure/sitefigs8.pdf")
+knitr::include_graphics("figure/sitefigS8.pdf")
 ```
 
 Interestingly, the gene with the most importance expressed by *S. cerevisiae* for predicting site RRV3 was *DAL4*, with *DAL5*, *DAL7*, and *DAL1* also having predictive power. 

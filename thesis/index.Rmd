@@ -1,6 +1,6 @@
 ---
 # UCD thesis fields
-title: "Finding subtle but important biological signals in large sequencing data sets using nontraditional approaches"
+title: "Signal in the noise: Recovering subtle patterns in biological sequencing data with new approaches"
 author: "Taylor Elaine Reiter"
 year: "2020"
 month: "November"
@@ -13,18 +13,19 @@ signature1: "C. Titus Brown"
 signature2: "Jonathan Eisen"
 
 dedication: |
+  To all I have loved and lost along the way.
 
 acknowledgments: |
   ```{=latex}
   \begin{epigraphs}
-    \qitem{quote}%
-          {source}
+    \qitem{I’m still thanking all the stars, one by one.}%
+          {Marissa Meyer}
   \end{epigraphs}
   ```
 
 
 abstract: |
-  abstract
+  Biological sequencing data has vastly expanded out knowledge of the microbial world.
 
 # End of UCD thesis fields
 knit: "bookdown::render_book"

@@ -26,6 +26,9 @@ acknowledgments: |
 
 abstract: |
   Biological sequencing data has vastly expanded out knowledge of the microbial world.
+  However, the generation of new sequencing data now outpaces our ability to analyze it.
+  While we have standard data analysis pipelines for many data types and research questions, these pipelines sometimes fail with complex experimental designs or with complexity of sequencing data.
+    
 
 # End of UCD thesis fields
 knit: "bookdown::render_book"

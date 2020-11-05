@@ -3,7 +3,7 @@
 ```{=latex}
 \begin{epigraphs}
   \qitem{The cell is basically a historical document, and gaining the capacity to read it (by sequencing of genes) cannot but drastically alter the way we look at all biology.}%
-        {Carl Woese, 1987}
+        {Carl Woese}
 \end{epigraphs}
 ```
 

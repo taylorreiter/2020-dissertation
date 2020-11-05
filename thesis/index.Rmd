@@ -22,13 +22,66 @@ acknowledgments: |
           {Marissa Meyer}
   \end{epigraphs}
   ```
+  I would like to express my gratitude and appreciation toward my advisors, C. Titus Brown and Ben Montpetit. 
+  Titus, thank you for creating a welcoming and inspiring space in which to learn and grow.
+  Thank you for allowing me to explore the questions I found interesting even when they were not the questions you would have me ask.
+  I feel incredibly lucky to have had the opportunity to do my PhD in your lab and under your guidance.
+  Ben, thank you for championing the creation of the wine sequencing data set, and for thinking of me once those data were created.
+  I appreciate your mentorship, patience, and flexibility along the wine data analysis journey.
+  I am eternally grateful for all the things you both did that created a positive PhD experience for me.
+
+  I would also like to extend gratitude toward Jonathan Eisen. 
+  Thank you for your support throughout my PhD, allowing me to use your lab space, providing feedback on my research, being an ally in many spaces, and for being a member of dissertation committee.
+
+  Thank you to Ron Runnebaum, Kerri Steenwerth, and the rest of the Pinot Project. 
+  I have enjoyed working on this project immensely and am appreciative of the work you did to make this possible. 
+
+  To the members of the Lab for Data Intensive Biology, thank you for all you have taught me during my PhD. 
+  To Phillip Brooks for help acclimatizing to the DIB-lab and the inspiration to work on IBD.
+  To Daniel Standage for patience with both rubber ducky and non-rubber ducky problems.
+  To Tessa Pierce for being a great paper companion and friend.
+  To Alicia Gingrich for commiserating about life and lending medical knowledge to my IBD project.
+  To Luiz Irber for teaching me almost all of the computational things that I learned during my PhD. 
+  And to Alicia and Luiz, thank you for creating the perfect desk sandwich full of learning and great conversations.
+
+  Thank you to Maria Marco for supporting my transition to computational research at a critical juncture, and to the umpteen other people I cannot remember now who insisted I should, "Go talk to Titus Brown" as I was starting my PhD. 
+
+  To Ryan Peek and the rest of the Davis R Users Group, I am grateful for the things you taught be about R and building and sustaining communities of practice. 
+
+  Special thanks to the members of the Stat Div Lab, in particular Amy Willis, Pauline Trinh, and Bryan Martin, for your friendship, feedback, and wonderful statistical methods. 
+  My research would not have been possible without the tools you have developed, and graduate school would have been less fun.
+
+  Thank you to Evan Bolyen for sharing your wealth of knowledge and being a steady friend.
+
+  Many thanks to Carole Hooven for encouraging me to pursue a PhD, to Katie Hinde for espousing the merits of pursuing other experiences between undergraduate and graduate school, and to Terence Capellini for early guidance in performing research that has and will continue to shape the scientist that I am. 
+  
+  I appreciate the friendship and support of many people.
+  I am grateful to have had such a wonderful cohort in the Food Science Graduate Group. 
+  To Jake Folz, Tyler Simons, and Nick Reitz especially, thank you for creating a great community that I loved being a part of.
+  To Zoe Paist and Savannah Mack, thank you creating for being such wonderful and encouraging roommates throughout my time in Davis. 
+  To Kate Mentzinger, Kristina Tester, and Cayla Calderwood, your continued friendship and support were lights throughout graduate school. 
+
+  To my family, thank you for your unwavering support, love, and encouragement at every stage.
+  Dad, your constructive criticism has been and always will be a gift that keeps on giving. 
+  Thank you for raising me to do something I love so I would never have to work a day in my life. 
+  Mom, your unrelenting belief in me, your love, and your support are foundations from which I continue to grow.
+  Thank you both for the sacrifices you have made to allow me to follow my dreams.
+  Rachel, thank you for paving a productive path for me to follow throughout our lives -- my journey was much smoother at the expense of your toil.
+  And to Dylan, near or far, I am incredibly grateful for your quiet encouragement, willingness as a sounding board, and humor over the last five years.
+
 
 
 abstract: |
-  Biological sequencing data has vastly expanded out knowledge of the microbial world.
-  However, the generation of new sequencing data now outpaces our ability to analyze it.
-  While we have standard data analysis pipelines for many data types and research questions, these pipelines sometimes fail with complex experimental designs or with complexity of sequencing data.
-    
+  Biological sequencing data has vastly expanded our knowledge of the microbial world.
+  However, sequencing data generation now outpaces data analysis.
+  Standard data analysis pipelines exist for many data types and research questions, but these pipelines sometimes fail with complex experimental designs or with complexity of sequencing data.
+  These sequencing data sets require novel analysis approaches and intense curation to derive biological insights. 
+  This dissertation presents new analysis approaches for sequencing data sets for which traditional analysis techniques failed.
+  The first approach combines diffusion mapping with differential expression to resynchronize time series RNA sequencing data from many biological groups.
+  When applied to primary wine fermentations from many vineyard sites, this approach provides insight into the vineyard-specific signatures of yeast metabolism and reveals fermentation traits that may be associated with region-specific wine flavor outcomes.
+  The second approach uses a reference- and assembly-free machine learning technique to select DNA sequences in metagenomes that differentiate groups, and then re-contextualizes those sequences using assembly graphs. 
+  When applied to a meta cohort of 605 metagenomes, this approach reveals novel microbial signatures of inflammatory bowel disease.
+ 
 
 # End of UCD thesis fields
 knit: "bookdown::render_book"

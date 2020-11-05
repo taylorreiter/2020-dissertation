@@ -729,7 +729,18 @@ kable(df, format = "latex", booktabs = T,
   kable_styling(font_size = 7)
 ```
 
+### Author Contributions
 
+This manuscript was a collaboration by Taylor Reiter, Luiz C. Irber, Phillip T. Brooks, Alicia Gingrich, Dylan Haynes, and C. Titus Brown.
+
+|Author|Contributions|
+|---|---|
+|TER| Conceptualization; Methodology; Formal analysis; Interpretation; Visualization; Writing - Original Draft; Writing - Review and Editing|
+|LCI| Methodology; Software |
+|PTB| Conceptualization |
+|AG| Interpretation |
+|DH|  Interpretation |
+|CTB| Conceptualization; Methodology; Interpretation; Software; Resources; Writing - Review and Editing; Supervision; Funding Acquisition |
 
 
 ```{r confusionplts1, eval=TRUE, echo=FALSE, message=FALSE, error=FALSE, warning=FALSE, fig.width=4, fig.cap="Confusion matrices for leave-one-study-out random forests models evaluated on the validation set. **A** K-mer model built from all k-mers in the metagenomes and **B** full marker gene model calculated from all reads in the metagenome."}

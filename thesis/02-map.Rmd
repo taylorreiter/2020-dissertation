@@ -445,6 +445,18 @@ We normalized log~2~ fold change values by calculating the length of the diffusi
 We analyzed log~2~ fold change values greater than two, i.e. genes with a log~2~ fold change of at least 2 between the most separated samples along a diffusion component.
 We performed Gene Ontology and KEGG enrichment analysis using the R clusterProfiler package [@yu2012clusterprofiler].
 
+### Author Contributions
+
+This manuscript was a collaboration by Taylor Reiter, Rachel Montpetit, Ron Runnebaum, C. Titus Brown, and Ben Montpetit.
+
+|Author|Contributions|
+|---|---|
+|TER| Conceptualization; Data Collection; Formal Analysis; Methodology; Visualization; Writing - Original Draft; Writing - Review and Editing |
+|RM | Data Collection |
+|RR | Conceptualization; Funding Acquisition |
+|CTB | Supervision; Funding Acquisition |
+|BM | Conceptualization; Funding Acquisition |
+
 
 ```{r upsetgrid, message = F, warning = F, echo = F, fig.cap="Upset plot depicting intersections between differentially expressed genes using diffusion component 1 or brix as continuous variable. **A.** Intersection of differentially expressed genes from the 2017 vintage. **B.** Intersection of genes from the 2019 vintage. **C.** Intersection of genes differentially expressed along diffusion component 1 from the 2017 and 2019 vintages. **D** Intersection of genes differentially expressed relative to change in brix from the 2017 and 2019 vintages."}
 knitr::include_graphics("figure/dm_upsetgrid-1.pdf")

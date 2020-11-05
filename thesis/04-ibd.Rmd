@@ -26,7 +26,7 @@ Dysbiosis is frequently observed in IBD, particularly in CD [@kang2010dysbiosis;
 Dysbiosis is defined as a decrease in gut microbial diversity that results in an imbalance between protective and harmful microorganisms, leading to intestinal inflammation [@weiss2017mechanisms].
 
 Strain-level differences may account for some heterogeneity in IBD gut microbiome profiles.
-Here we use *strain* to refer to within-species variation that generates grouping below the species level.
+Here we use *strain* to refer to within-species variation that generates taxonomic grouping below the species level.
 A recent investigation of time-series gut microbiome metagenomes found that one clade of *Ruminococcus gnavus* is enriched in CD [@hall2017]. 
 Further, this clade produces an inflammatory polysaccharide [@henke2019ruminococcus].
 While this clade is enriched in CD, its enrichment was previously masked from computational discovery by concomitant decreases in other *Ruminococcus* species in IBD [@hall2017], highlighting the need for strain-resolved analysis of metagenomic sequencing in the exploration of IBD gut microbiomes.
@@ -47,11 +47,11 @@ Data-reduction techniques like MinHash sketching make k-mer-based analysis scala
 MinHash sketching sacrifices the fine-scaled resolution of reference-based techniques but is representative of the full sequencing sample, including strain-variable accessory elements that are associated with diseases. 
 
 Tertiary information acquired through reference-based analysis, in particular functional annotations and gene-gene proximity, is lost through MinHash sketching analysis but can be recovered via assembly-graph queries with k-mers of interest [@brown2020exploring; @jaillard2018fast]. 
-Both k-mers and assembly graphs represent all sequences contained within a metagenome, retaining strain-specific features that may be lost by other analysis approaches. 
+Both k-mers and assembly graphs can be used to represent all sequences contained within a metagenome, retaining strain-specific features that may be lost by other analysis approaches. 
 Assembly graphs reassociate k-mers with important context (e.g. operon structures) and known annotations, recovering critical information lost through the MinHash sketching approach.
 We refer to sequences nearby to and recovered by queries as assembly graph *neighborhoods* [@brown2020exploring]. 
 Neighborhoods are targeted subsets of metagenomes that contain only sequences of interest that can be analyzed with traditional, computationally-intensive, high-resolution methods. 
-While traditional analysis methods may sometimes fail on neighborhoods given sequence complexity or lack of representation in databases, it is clear when the fail, making these known-unknown problems instead of unknown-unknown problems [@brown2020exploring].
+While traditional analysis methods may sometimes fail on neighborhoods given sequence complexity or lack of representation in databases, it is clear when they fail, making these known-unknown problems instead of unknown-unknown problems [@brown2020exploring].
 
 Here we use k-mer- and assembly-graph-based techniques to perform a meta-cohort analysis of six studies of IBD gut metagenome cohorts comprising 260 CD, 132 UC and 213 healthy controls (see **Table \@ref(tab:cohorts)**) [@lloyd2019; @lewis2015; @hall2017; @franzosa2019; @gevers2014; @qin2010].
 Through meta-cohort analysis, we demonstrate a weak but consistent signature of IBD subtype in fecal microbiome metagenomes. 
@@ -95,7 +95,7 @@ knitr::include_graphics('figure/ibdfig1.pdf')
 We developed a reference-free pipeline to fully characterize gut metagenomes of IBD patients (**Figure \@ref(fig:overview)**).
 After consistent preprocessing, we use scaled MinHash sketching to produce subsampled k-mer abundance profiles of metagenomes that reflect the sequence diversity in a sample [@pierce2019], and use these profiles to perform metagenome-wide k-mer association with IBD subtype. 
 We refer to scaled MinHash sketches as *signatures*, and for simplicity, continue referring to the sub-sampled k-mers in a signature as *k-mers*. 
-In total, we profiled 7,376,151 k-mers across all samples in all cohorts. 
+In total, we profiled 7,376,151 subsampled k-mers across all samples in all cohorts, representing approximately 14 billion total k-mers. 
 
 We detected variation due to IBD diagnosis in k-mer profiles of gut metagenomes from different cohorts.
 We calculated pairwise distance matrices using jaccard distance and angular distance between k-mer profiles, where jaccard distance captured sample richness and angular distance captured sample diversity. 
@@ -162,7 +162,7 @@ iHMP             |    49.1    | 48.6|   44.2       |   46.5"
 df <- read.delim(textConnection(acc_data), header=T,sep="|", strip.white=TRUE, stringsAsFactors=FALSE)
 row.names(df)<-NULL
 kable(df, format = "latex", booktabs = T, 
-      caption = "Accuracy of random forests classifiers built with different underlying representations of IBD metagenomes when applied to each validation set. *m.* is an abbreviation for model.", 
+      caption = "Accuracy of random forests classifiers built with different underlying representations of IBD metagenomes when applied to each validation set. \\textit{m.} is an abbreviation for model.", 
       col.names = c("validation study", "k-mer m.", "full marker gene m.", "core marker gene m.", "k-mer m. of core marker genes")) %>%
   kable_styling(font_size = 9)
 ```
@@ -230,7 +230,7 @@ Many beneficial bacteria, in particular those that are oxygen sensitive, decreas
 Two strains of *Faecalibacterium prausnitzii* had the largest number of k-mers with decreased abundance in CD compared to nonIBD (**Figure \@ref(fig:hashcontent) B**). 
 *F. prausnitzii* is an obligate anaerobe and a key butyrate producer in the gut, and plays a crucial role in reducing intestinal inflammation [@lopez2017faecalibacterium].
 *F. prausnitzii* is extremely sensitive to oxygen, though it may be able to withstand oxygen exposure for up to 24 hours depending on the availability of metabolites for extracellular electron transfer [@lopez2017faecalibacterium].
-*Acetatifactor* (GTDB species *Acetatifactor sp900066365*) had largest variable importance of k-mers with decreased abundance in CD compared to nonIBD (**Figure \@ref(fig:hashcontent)**).
+*Acetatifactor* (GTDB species *Acetatifactor sp900066365*) had the largest variable importance of k-mers with decreased abundance in CD compared to nonIBD (**Figure \@ref(fig:hashcontent)**).
 *Acetatifactor* is a bile-acid producing bacteria associated with a healthy gut, but limited evidence has associated it with decreased abundance in IBD [@pathak2018intestine].
 In UC, *Gemmiger formicilis* had both the largest variable importance and number of k-mers with decreased abundance compared to nonIBD (**Figure \@ref(fig:hashcontent)**).
 *G. formicilis* is a strictly anaerobic bacteria that produces both formic acid and butyric acid [@gossling1975gemmiger].
@@ -356,7 +356,7 @@ We extended this analysis to include all 41 genomes we detected as important for
 
 In general, we found no evidence for disease-specific pangenomes among the 41 pangenomes.
 Instead, in almost all pangenomes all genes are observed in at least some some CD, UC, and nonIBD metagenomes.
-On average, 152 genes were unobserved in UC, 149 in CD, and 72 in nonIBD per pangenome, accounting for less than 1% of genes in the pangenom (**Table \@ref(tab:pangenomeaccum)**).
+On average, 152 genes were unobserved in UC, 149 in CD, and 72 in nonIBD per pangenome, accounting for less than 1% of genes in the pangenome (**Table \@ref(tab:pangenomeaccum)**).
 These results in part explain heterogeneous study findings in previous IBD gut microbiome investigations.
 
 ```{r pangenomeaccum, echo = F, warning = F, message = F, include = T}
@@ -415,7 +415,7 @@ While more abundant in CD, this cluster is also identifiable within healthy huma
 
 While the majority of genes were observed in CD, UC, and nonIBD, IBD metagenomes harbored fewer genes than nonIBD metagenomes  (**Table \@ref(tab:pangenomemean)**).
 When we counted the number of genes within each pangenome with mapped reads, 39 of 41 pangenomes for CD and 37 of 41 pangenomes for UC had a significantly lower number of genes observed per metagenome than nonIBD (ANOVA p < 0.05, Tukey's HSD p < 0.05). 
-Only *C. bolteae* in CD and *Romboutsia timonensis*, *Anaeromassilibacillus*, and *Actulibacter* in UC had a significantly 
+Only *C. bolteae* in CD and *Romboutsia timonensis*, *Anaeromassilibacillus*, and *Actulibacter* in UC had a significantly more genes per sample within each pangenome.
 Only *F. gnavus* showed no significant difference in the number of genes per sample across all groups. 
 
 ```{r pangenomemean, echo = F, warning = F, message = F, include = T}
@@ -475,7 +475,7 @@ While the underlying etiology remains poorly understood, IBD arises from a compl
 Here we present a new method to examine microbial associations of disease, and using this method, uncover signatures of IBD subtype. 
 These signatures demonstrate consistent loss of diversity of specific microorganisms, particularly in CD. 
 Meanwhile, our analysis was consistent with strain enrichment in four species in CD and two in UC, potentially indicating niche partitioning in response to IBD-associated perturbations.
-The conserved signatures we detect warrant further research and may yield new therapeutics for IBD treatment.
+The conserved signatures we detect warrant further research and may yield new diagnostics and therapeutics for IBD treatment.
 
 While we found conserved signatures in IBD subtype, we found no evidence for disease-specific microbiomes, or pangenomes of the organisms that comprise them. 
 The observation that almost all genes within a pangenome occur in CD, UC, and nonIBD suggests the presence of ecotypes -- subspecies that are adapted to different environments -- rather than pathotypes -- subspecies associated with a specific disease.

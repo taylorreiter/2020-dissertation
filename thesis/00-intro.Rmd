@@ -54,7 +54,7 @@ Unexpected contamination can confound biological interpretation as occured with 
 Alternatively, complex or incomplete experimental design -- be it unbalanced phylogenetic characterization, unevenly sampled groups, or asynchronous time series -- confound statistical inference and may demand new techniques in order to answer a question similar to the one originally posed.
 
 For many biological questions, no data analysis technique currently exists.
-For example, methods are advancing toward enabling strain-resolved metagenomics [@quince2017desman; @quince2020metagenomics], but no method enables complete strain deconvultion from metagenomes. 
+For example, methods are advancing toward enabling strain-resolved metagenomics [@quince2017desman; @quince2020metagenomics], but no method yet enables complete strain deconvolution from metagenomes. 
 
 With the adoption of FAIR (Findable, Accessible, Interoperable, and Reusable) data principles across the biology community [@wilkinson2016fair], sequencing data can continually be reanalyzed as tools improve.
 Such has occured with the Marine Microcrobial Eukaryotic Transcriptome Sequencing Project (MMETSP) [@keeling2014marine; @johnson2019re; @alexander2019keeping], and may become more common practice as analysis tools advance.

@@ -1,2 +1,59 @@
 # Conclusion {-}
 
+```{=latex}
+\begin{epigraphs}
+  \qitem{The end is just the beginning.}%
+        {T. S. Elliot}
+\end{epigraphs}
+```
+
+Biological sequencing has enabled countless discoveries in microbiology and beyond. 
+Development of computational analysis techniques has been foundational to these discoveries, but some sequencing data remain difficult to analyze. 
+In particular, overcoming complexity in experimental designs or in the sequencing data itself sometimes requires new analysis approaches.
+This dissertation developed two new analysis techniques to identify subtle but biologically important patterns in large sequencing data sets that were not identifiable using standard approaches.
+
+<!-- wine -->
+
+The first approach enables the analysis of large time series RNA sequencing data sets that capture global shifts in gene expression among many “treatment” groups.
+Applying this method to wine fermentations from many vineyard sites demonstrated that while a coordinated shift in gene expression was common to all fermentations, vineyard-site specific differences occurred that were related to the presence of non-*Saccharomyces* organisms and initial nitrogen content in the grape must.
+Applying this method to the onset of hypoxia in transcription factor mutants demonstrated that some transcription factors are required for transcriptome homeostasis in hypoxia and identified genetic signatures consistent with a novel role for some proteins in regulating the hypoxic response.
+Successful application on two data sets suggests that this method is well suited for the analysis of large time series gene expression studies with many groups.
+
+While the method itself is novel, it relies on two well-vetted methods that have been applied to other sequencing datasets: diffusion maps and continuous differential expression.
+Diffusion maps resynchronize differentiating cells profiled with single cell RNA sequencing.   
+They are frequently used in single cell RNA sequencing as a visualization method.
+Continuous differential expression is less commonly applied than discrete differential expression, but is implemented in standard analysis packages like limma and DESeq2. 
+After successful application of differential expression to wine fermentations over the only continuous variable measured during fermentation (total soluble solids, e.g. sugar concentration), diffusion maps enabled the identification of continuous latent variables that captured additional structure in the data set. 
+Continuous differential expression over these latent variables enabled the identification of genes that drove subtle difference between samples. 
+
+Diffusion maps have not been combined with continuous differential expression per se in single cell sequencing analysis as special statistical considerations are necessary for the many zeros observed for gene counts within and between cells. 
+However, conversations on GitHub issues indicate that some researchers use linear regression over diffusion components to identify genes of interest.
+This approach has not been used in bulk RNA-sequencing.
+Similarly, diffusion maps are not commonly used in bulk RNA sequencing but other dimensionality reduction techniques such as principal component analysis and t-distributed stochastic neighbor embedding are widely used.
+Because diffusion maps are non-linear and retain distances between samples, they are well-suited to be combined with continuous differential expression.
+Combined application of these two approaches is a new technique for the analysis of asynchronous time series bulk RNA-sequencing.
+
+<!-- IBD -->
+
+The second approach developed in this dissertation enables reference- and annotation-free discovery of genetic signatures in large shotgun metagenome cohorts.
+Applying this method to a meta cohort of gut microbiome metagenomes from inflammatory bowel disease (IBD) identified the first cross-study genetic signatures of IBD subtype.
+This method should identify genetic signatures of group in any large meta cohorts metagenomes or metatranscriptomes, although that remains to be tested.
+
+This method is novel.
+Current metagenome analysis techniques rely on read mapping to a reference set of genomes or rely on a reference set of genomes generated *de novo* from the metagenome itself. 
+These analysis methods ignore reads that fail to map to these references in down stream analysis, biasing biological discovery toward sequences in reference databases or toward sequences that assemble and bin well.
+This method demonstrated that discarded reads contain biologically important signatures and proposes a schema for interpretation of those signatures.
+
+K-mers, words of length *k* in nucleotide sequences, powered this new method.
+In particular, scaled MinHash sketches and assembly graphs built from k-mers provided scalability and resolution necessary to operate on many metagenomes.
+By remixing functionality in the sourmash, ranger, and spacegraphcats software packages this method generated new insights into a difficult biological problem.
+
+<!-- the future -->
+
+As sequencing technology improves, longer reads with higher accuracy will change the landscape of challenges in sequencing data analysis. 
+The tandem increase in the number of systems in which sequencing can be applied and the types of sequencing available for research ensures that data analysis will continue to be the bottleneck for biological discovery.  
+
+This research was successful because of distributed communities of practice that operated at different scales. 
+Each community facilitated transfer of knowledge and allowed people with different expertise to invest in these projects. 
+More communities that value diverse skill sets and foster collaboration are needed to break the data analysis bottleneck in biology.
+Increased computational literacy among biologists will improve access to these research questions, while broad investment in open science practices will facilitate shared growth across disciplines.

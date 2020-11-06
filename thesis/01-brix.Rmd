@@ -1,0 +1,459 @@
+# *Saccharomyces cerevisiae* gene expression during fermentation of Pinot noir wines at industrially relevant scale {#chp-brix}
+
+```{=latex}
+\begin{epigraphs}
+  \qitem{Yeast is a machine.}%
+        {Robert Bud}
+\end{epigraphs}
+```
+
+```{r libsbrix, echo = F, message = F, warning = F}
+library(kableExtra)
+```
+
+## Introduction
+
+*Saccharomyces cerevisiae* is most often the dominant fermentative organism during vinification. 
+As a domesticated species, it has been selected to assimilate sugars in grape must and transforms them to ethanol, thereby out competing other microorganisms during fermentation [@querol2003adaptive]. 
+During this process, *S. cerevisiae* encounters a dynamic stress landscape.
+In early fermentation, sources of stress include high sugar concentration (osmotic stress), low pH (acid stress), decreasing oxygen (hypoxia), and the presence of other organisms that compete for nutrients or produce inhibitory compounds; as well as stress caused by sulfur dioxide additions that are used to inhibit spoilage organisms. 
+As fermentation progresses, nutrients also become limiting (starvation) and ethanol concentrations rise (ethanol stress).
+Yet, through a coordinated gene expression response, *S. cerevisiae* adapts to these stresses and most often continues fermentation until the must is dry. 
+
+High throughput gene expression profiling (e.g. microarray and RNA sequencing) has offered a window into the metabolic strategies used by *S. cerevisiae* during fermentation to adapt and dominate fermentation environments. 
+Previous research has reported expression changes in >2000 genes during fermentation [@rossignol2003genome; @marks2008dynamics; @rossouw2012effect].
+In early fermentation, this is marked by expression of gene products that support biosynthetic processes and acquisition of abundant nutrient resources [@rossignol2003genome; @marks2008dynamics]. 
+As fermentation progresses, nitrogen limitation, phosphate limitation, and/or ethanol accumulation can trigger a transition to a non-proliferative state (i.e. stationary phase), which involves remodeling of the gene expression program to support cellular adaptation to the changing environmental with continued metabolism [@rossignol2003genome; @marks2008dynamics]. 
+Towards the end of fermentation, relief of nitrogen catabolite repression and increased expression of nitrogen recycling genes [@rossignol2003genome; @marks2008dynamics] is observed, which can be accompanied by further remodeling of the translational machinery and increased oxidative metabolism [@backhus2001functional; @mendes2007transcriptional].
+As ethanol concentrations rise through the end of fermentation, a gradual transcriptome response to ethanol stress is also observed [@marks2008dynamics]. 
+This response overlaps with, but appears distinct from, the environmental stress response seen in laboratory yeast [@gasch2000genomic; @rossignol2003genome; @marks2008dynamics], which may be related to the multitude of simultaneous stresses experienced by the yeast at the end of fermentation [@bisson2019gene]. 
+Indeed, the majority of genes with stress response elements in their promoter are expressed at the end of fermentation [@puig2000stress].
+
+Through the associated metabolic processes that consume and produces a multitude of compounds, *S. cerevisiae* gene expression in response to environmental factors is related to overall fermentation kinetics and wine sensory outcomes. 
+For example, fermentations can become sluggish or stuck when *S. cerevisiae* inadequately adapts to stresses encountered in the wine fermentation environment [@bisson1999stuck]. 
+In addition, altered gene expression likely underlies differential wine sensory characteristics in fermentations conducted with different industrial yeast strains [@patel2002effect; @gutierrez2013genetic]. 
+To impact wine quality, genetic strategies have been applied in an attempt to alter the expression of flavor-associated genes [@rossouw2008linking], which have achieved variable levels of success. 
+Consequently, further study of the *S. cerevisiae* gene expression program across fermentation is required to understand the yeast-environment relationship and how these interactions may be controlled to improve wine  fermentation outcomes.
+
+Given the importance of the yeast-environment interaction, a major consideration with respect to collecting *S. cerevisiae* gene expression data is the growth conditions used.
+To date, the majority of gene expression surveys have profiled fermentations that deviate in one or more ways from the industrial conditions in which most fermentations take place.
+For example, hundreds to thousands of liters of grape must are fermented to wine at industrial scales, while milliliter to liter volumes are commonly used in laboratory studies of gene expression [@riou1997stationary; @backhus2001functional; @rossignol2003genome; @marks2008dynamics; @rossouw2009comparing; @casalta2010comparison; @rossouw2012effect; @walker2014genome].
+Industry scale fermentations also have different kinetics than lab scale fermentations [@casalta2010comparison; @rossouw2012effect; @cadiere2012pilot], and are less aromatic due to differences in hydrodynamics [@vila1998levures; @casalta2010comparison].
+Similarly, dissolved oxygen differs at lab scale from industrial scale [@rossouw2012effect], which can impact fermentation outcomes [@du2006oxygen].
+Possibly reflecting these different environments, at the end of fermentation the expression of key genes involved in amino acid transport and other core metabolic processes have been shown to differ between lab and industrial fermentations [@rossouw2012effect].
+Consequently, we propose that the physical and chemical differences in lab versus industrial scale wine fermentations are important factors to consider.
+
+Another major consideration when conducting gene expression studies, is that most studies investigate the fermentative capability of *S. cerevisiae* in monoculture using sterile synthetic media or filter sterilized grape must [@backhus2001functional; @rossignol2003genome; @marks2008dynamics; @rossouw2008linking; @rossouw2012effect]. 
+These controlled studies are important and allow connections between the media, gene expression, and wine outcomes to be made [@rossouw2008linking], but  do not recapitulate the complexity of a natural grape must that varies in parameters like nitrogen composition, pH, and phenolic and elemental profiles [@roullier2014grape; @vilanova2015variability; @ramos2019variability; @grainger2020vineyard]. 
+These are parameters that will shape the fermentation environment and the metabolic response of *S. cerevisiae*. 
+In addition, these experiments lack the diverse grape must microbiome that is a contributing component of wine fermentations [@bokulich2014microbial; @david2014high; @pinto2015wine; @wang2015fungal; @garofalo2016non; @bokulich2016associations; @mezzasalma2017grape; @mezzasalma2018geographical; @singh2018genotype; @liu2020fungal; @jolly2003occurrence; @ghosh2015assessment; @wang2015viable; @bagheri2015diversity; @bagheri2020ecological]. 
+Inter-species interactions are a critical component of the fermentation environment that informs the biology and behavior of *S. cerevisiae* during fermentation. 
+Indeed, it has been shown that non-Saccharomyces yeast impact the metabolism of *S. cerevisiae* through direct and indirect interactions [@brou2018mixed; @curiel2017different; @alonso2019dominance], leading to faster resource acquisition by *S. cerevisiae* in early fermentation and altered metabolism of vitamins and minerals [@tronchoni2017early; @curiel2017different; @alonso2019dominance; @shekhawat2019rna]. 
+While research is still needed to describe the impact of a diverse microbial consortia on *S. cerevisiae* during fermentation (reviewed in @conacher2019peer and @bordet2020yeast), it remains that industrial fermentations are not sterile and involve diverse microorganisms [@jolly2003occurrence; @ghosh2015assessment; @wang2015viable; @bagheri2015diversity; @bagheri2020ecological].
+Even in fermentations treated with sulfur dioxide (SO2) to control microbial spoilage organisms, native fungi and bacteria are metabolically active during fermentation [@egli1998dynamics; @bartowsky2009bacterial; @bagheri2020ecological]. 
+This makes profiling *S. cerevisiae* gene expression amongst diverse microbial consortia important, as it will lead to a better understanding of the principles that govern *S. cerevisiae* gene expression and metabolism during fermentation.
+
+Here, to begin to address the impact of an industrial wine fermentation environment on *S. cerevisiae* gene expression, we incorporate the inherent variability found in industrial fermentations and determine the core *S. cerevisiae* gene expression program across chemically and biologically diverse Pinot noir grape musts. 
+Specifically, we used time series RNA-sequencing to capture the gene expression profiles of *S. cerevisiae* during 40 inoculated primary fermentations at pilot scale (e.g. 150 liters) using California Pinot noir grapes from 10 vineyards across two vintages.
+Using this data, we characterize a core metabolic program during fermentation, which is well reflected by lab-scale fermentations, in addition to gene expression patterns that deviate from expectation. 
+In particular, we observe altered gene expression that may be explained by the presence non-Saccharomyces organisms and regulation of metabolic processes related to stress, oxygen, and redox balance through out fermentation. 
+Our observations suggest that the core genetic programs uncovered by lab-based studies are detected in industry-relevant fermentations, but production-based environmental factors induce other gene expression programs that are layered on top of this core gene expression program. 
+We expect that understanding such variations in gene expression within a wine production-like environment will be key to defining approaches that can be used to manage fermentation outcomes.
+
+## Results and Discussion
+
+### Conditions and rates of fermentation
+
+Pinot noir grapes were harvested from the same 10 vineyards in California during the 2017 and 2019 vintages for wine production at the UC Davis Teaching and Research Winery (**Figure \@ref(fig:brixfig1)A**). 
+To standardize fermentations, we used grapes from the same Pinot noir clone and rootstock that were harvested at the same ripeness (~25 brix, total soluble solids as a proxy for sugar concentration). 
+We conducted duplicate fermentations using the grape material from each vineyard for a total of 40 fermentations (20 from each vintage) at industry-relevant scales using the same wine making protocol. 
+Each fermentation was inoculated with the commercial wine strain *S. cerevisiae* RC212 and sampled to collect cells for gene expression analysis at 16 (exponential phase/early fermentation), 64 (stationary phase/mid fermentation), and 112 (decline phase/end of fermentation) hours post-inoculation (**Figure \@ref(fig:brixfig1)B**). 
+While sampling times were standardized across fermentations, the rate of fermentation varied, resulting in samples being collected across a range of brix values (**Figure \@ref(fig:brixfig1)C**).
+Differences in fermentation speeds likely reflect diversity in the starting material and differential fermentation outcomes, which has also been demonstrated in sensory studies performed on wines produced from these same vineyard sites in previous vintages [@cantu2020investigating]. 
+These data also provided samples across a multitude of brix values that can be used to investigate the *S. cerevisiae* gene expression program across fermentation. 
+
+```{r brixfig1, echo = F, message = F, warning = F, fig.cap = "**A.** Map displaying the six American Viticulture Areas (AVAs) in which the 10 study vineyards are located. **B** Fermentation curves reflecting the change in brix over fermentation. Brix is a measure of total soluble solids that is used as a proxy for sugar concentration in grapes, grape must, and wine.**C.** Brix at time of sampling for each RNA-seq sample relative to inoculation.  While samples were taken at the same absolute time, fermentations proceeded at different rates leading to different brix values in each fermentation."}
+knitr::include_graphics("figure/brix_fig1.pdf")
+```
+
+### A consistent whole-transcriptome remodeling occurs during fermentation independent of vintage
+
+To determine conserved vineyard-independent gene expression processes used by *S. cerevisiae* during fermentation of California Pinot noir must, we combined the data from all 10 sites and performed differential expression along the continuous variable brix for each vintage (**Figure \@ref(fig:brixfig1)C**). 
+Under this model, log~2~ fold change values represent the change in gene expression for each unit increase of brix. 
+Because brix decreases during fermentation, a positive log~2~ fold change corresponds to a gene that decreased in expression as fermentation progressed, while a negative log~2~ fold value corresponds to a gene that increased in expression as fermentation progressed.
+After performing differential expression, we further intersected the differentially expressed genes across vintages to determine consistent changes that were vintage-independent. 
+From this analysis, we observed that 991 genes decreased expression brix decreased, while 951 genes increased expression as fermentation progressed (**Figure \@ref(fig:brixfig2)A**). 
+The large fraction of shared differentially expressed genes suggests that a core gene expression program is followed independent of vintage.
+
+```{r brixfig2, echo = F, message = F, warning = F, fig.cap = "Transcriptome remodeling in fermentation is consistent across fermentations and vintages. **A.** Upset plot showing the intersection of genes that are significantly induced at the beginning and end of fermentation in each vintage using a log~2~ fold change cut off of 1. The majority of genes are consistently induced across fermentations and vintages. **B** Genes induced in early (*HXT1*), late (*HXT4*), and constitutively (*ADH1*) in fermentation. **C.** Proteomaps depicting Gene Ontologies (left) and genes (right) that are induced in early (top) and late (bottom) fermentation. The size of individual genes reflects the associated log~2~ fold change value. Note that for presentation purposes not all genes that are significantly induced are depicted."}
+knitr::include_graphics("figure/brix_fig2.pdf")
+```
+
+Of the genes differentially expressed throughout fermentation, many are known to function in wine fermentation and are central to yeast growth, metabolism, and cell survival (**Figure \@ref(fig:brixfig2)C**, **Table \@ref(tab:constitutivegenes) - Table \@ref(tab:lategenes)**). 
+We observed strong signatures of growth early in fermentation that included cellular investment in ribosome biogenesis, metabolism of lipids, purines, and amino acids, as well as cell division machinery (**Figure \@ref(fig:brixfig2)C**, **Figure \@ref(fig:enrichmentindgo)**,  **Figure \@ref(fig:enrichmentindkegg)**). 
+These processes, coupled with enrichment of associated pathways involved in RNA transcription and transport, reflect energy use for cell growth and proliferation associated with the log phase of growth occurring in early fermentation. 
+Further in fermentation, changes in ribosomal machinery gene expression occured, as reported in previous studies (reviewed in @bisson2019gene) (**Figure \@ref(fig:brixfig2)C**), reflecting a transition to a non-proliferative metabolic state. 
+This included gene expression patterns consistent with hallmark isoform switches in hexose transporters and glycolytic enzymes that occur as concentrations of glucose or fructose change [@Rodicio2017] (**Table \@ref(tab:earlygenes) - Table \@ref(tab:lategenes)**). 
+For example, the glucose transporter *HXT3* is used in both high and low glucose conditions and is seen to be constitutively expressed across the fermentation time course. 
+In contrast, *HXT1* encodes a low affinity glucose transporter and was more strongly expressed at the beginning of fermentation when the grape must was replete with glucose (**Figure \@ref(fig:brixfig2)B**). 
+*HXT4* has a high affinity for glucose and is only expressed when glucose concentrations are low [@Ozcan1996], which is observed in our data as *HXT4* expression increases in late fermentation (**Figure \@ref(fig:brixfig2)B**).
+
+The pathways enriched in early and late fermentation align with expectations based on previous research and the known biology of *S. cerevisiae* during fermentation. 
+This was expected and highlights the core processes that previous research efforts have defined. 
+Yet, we also observed gene expression signatures indicative of unexpected processes within these fermentations, which may be linked to the industry-like environment these studies were performed in. 
+These patterns of gene expression included signatures of nutrient limitation in early fermentation and polyol metabolism in late fermentation that were both consistent with interactions with non-Saccharomyces organisms. 
+We also saw signatures of concurrent hypoxic and anoxic metabolism that suggests differential availability of oxygen for some yeast populations throughout fermentation. In association, we observe mounting gene expression related to stress that is likely involved in mitigating oxidative and other stresses. 
+Finally, we find few vintage-specific differences, but those we do identify may be associated in part with pesticide application in the vineyard. 
+We discuss these observations below.
+
+```{r constitutivegenes, echo = F, message = F, warning = F}
+read.csv("data/constitutive_genes.csv") %>%
+kable(caption = 'Genes with known and important roles in hexose transport, glycolysis, and fermentation that are highly expressed throughout fermentation.') %>%
+  column_spec(1, width = ".8in") %>%
+  column_spec(2, width = "1in") %>%
+  column_spec(3, width = "1in") %>%
+  column_spec(4, width = "3in") %>%
+  row_spec(0, bold=TRUE) %>% 
+  kable_styling(full_width = F, font_size = 9)
+```
+
+(ref:ciriacy1975genetics) [@ciriacy1975genetics]
+(ref:zuzuarregui2006transcriptomic) [@zuzuarregui2006transcriptomic]
+
+```{r earlygenes, echo = F, message = F, warning = F}
+read.csv("data/early_genes.csv") %>%
+kable(caption = 'Genes with known and important roles in fermentation biology that are induced in early fermentation in both the 2017 and 2019 vintages.') %>%
+  column_spec(1, width = ".8in") %>%
+  column_spec(2, width = "1in") %>%
+  column_spec(3, width = "4in") %>%
+  row_spec(0, bold=TRUE) %>% 
+  kable_styling(full_width = F, font_size = 8) 
+```
+
+(ref:saint2004functional) [@saint2004functional]
+(ref:curiel2016identification) [@curiel2016identification]
+(ref:piper1998pdr12) [@piper1998pdr12]
+(ref:caro1998transcription)  [@caro1998transcription]
+(ref:KLIEWER1970) [@KLIEWER1970]
+(ref:crepin2017management) [@crepin2017management]
+(ref:hazelwood2008ehrlich) [@hazelwood2008ehrlich]
+
+```{r lategenes, echo = F, message = F, warning = F}
+read.csv("data/late_genes.csv") %>%
+kable(caption = 'Genes with known and important roles in fermentation biology that are induced in late fermentation in both the 2017 and 2019 vintages.') %>%
+  column_spec(1, width = ".8in") %>%
+  column_spec(2, width = "1in") %>%
+  column_spec(3, width = "4.1in") %>%
+  row_spec(0, bold=TRUE) %>% 
+  kable_styling(full_width = F, font_size = 7) 
+```
+
+(ref:Franois2001) [@Franois2001]
+(ref:Cebollero2009) [@Cebollero2009]
+(ref:Alexandre2001) [@Alexandre2001]
+(ref:Singer1998) [@Singer1998]
+(ref:Parrou1997) [@Parrou1997]
+(ref:Lillie1980) [@Lillie1980]
+(ref:Udom2019) [@Udom2019]
+
+### Nutrient limitation in early fermentation
+
+While gene expression data supports logarithmic growth at 16 hours post-inoculation (**Table \@ref(tab:earlygenes)**), at this early timepoint we also find evidence for the expression of genes that are typically up regulated in response to nutrient limitation. 
+*PHO5* and *PHO89* are phosphate transporters that are induced during phosphate starvation [@Ogawa2000], both of which are induced in early fermentation, along with *PHO90*. 
+Phosphate limitation can cause stuck fermentations, as phosphate is critical for cellular function as a component of ATP, nucleotides, sugars, lipids, and macromolecules such as proteins [@bisson1999stuck]. 
+Given that all these Pinot noir fermentations completed, and that the majority of glucose was converted to ethanol after 16hrs of fermentation, induction of genes encoding phosphate transporters early in fermentation is not likely associated with phosphate starvation.
+Instead, we expect that it may be a response to the presence of non-Saccharomyces yeast, as co-cultivation of *S. cerevisiae* with *Torulaspora delbrueckii* led to the induction of a gene encoding a high-affinity phosphate transporter (*PHO84*) after only three hours of fermentation [@curiel2017different]. 
+Enological co-culture of *S. cerevisiae* with organisms such as Hanseniaspora guilliermondii and *Brettanomyces* has been linked to induction of genes involved in vitamin biosynthesis in fermentation [@barbosa2015genomic; @kosel2017influence], which could be indicative of increased nutrient competition and depletion of some nutrients even in early fermentation.
+We similarly observe induction of genes that encode enzymes involved in biosynthesis of B vitamins in early fermentation, including *BIO2* (biotin biosynthesis), *RIB3* and *RIB4* (riboflavin biosynthesis), *PAN6* (pantothenate synthesis), *SPE3* and *SPE4* (pantothenic acid synthesis), and *MIS1* and *FOL1* (folate biosynthesis). 
+In addition, we see induction of *THI21*, which is involved in thiamine biosynthesis. As with phosphate, this may be related to the presence of metabolically active non-Saccharomyces microorganisms in all fermentations (**Chapter [3](chp-site)**). 
+We expect that continued work using industry-like fermentations across grape varieties and yeast stains as well as controlled fermentations using reconstituted microbial consortiums, will be critical for understanding the relevance of these gene expression signatures to wine fermentation outcomes, which if understood, could be potentially addressed through appropriate nutrient additions.
+
+### Evidence of varied gene expression patterns linked to oxygen exposure during fermentation
+
+A wine fermentation is generally regarded as an anaerobic process given that the carbon dioxide (CO~2~) produced as a byproduct of ethanol fermentation protects must from dissolved oxygen [@devatine2011protective]. 
+Yet, within anaerobia, there is an important distinction between hypoxic (low oxygen) and anoxic (no oxygen) conditions. 
+In a fermentation, it is expected that molecular oxygen (O~2~) is introduced into the grape must by handling processes, including pump overs that may introduce small amounts of dissolved oxygen into industrial-scale tanks (0.05 mg/L) [@moenne2014oxygen].
+Stratification within a fermentation may also expose local cell populations to different oxygen environments leading to yeast cell populations undergoing different anaerobic processes. 
+Within our data, we found gene expression patterns consistent with different populations of cells experiencing varied levels of oxygen exposure during fermentation. 
+For example, the yeast cell wall undergoes remodeling in response to oxygen availability, which is accomplished in part by regulated expression of cell wall mannoproteins encoded by *CWP1*/*CWP2*, *DAN1*, and *TIR1*-*TIR4* [@abramova2001reciprocal]. 
+Specifically, expression of *DAN1* and *TIR1-TIR4* occurs reciprocally to expression of *CWP1* and *CWP2*, with the *CWP* genes being expressed in aerobic conditions and *DAN1*/*TIR1*-*TIR4* in anaerobic conditions [@abramova2001reciprocal]. *DAN1* expression is known to be repressed in aerobic conditions by four independent regulatory mechanisms [@sertil2003synergistic].
+Interestingly, we observed expression of both *CWP1* and *DAN1*/*TIR1-TIR4* in early fermentation samples. 
+Similarly, in early fermentations both *HYP2* and *ANB1* were induced. 
+These paralogous genes encode translation elongation factor eIF-5A and are part of a family of paired genes for which oxygen induces the aerobic isoform and represses the hypoxic isoform [@kwast1998oxygen]. 
+*HYP2* is expressed under aerobic growth, while *ANB1* is expressed under hypoxic growth and is tightly regulated by the presence of oxygen [@Whl1993].
+Together, these gene expression patterns indicate varied gene expression programs within yeasts that would be best explained by differing levels of oxygen exposure.
+
+Among late induced genes, we observed additional oxygen-regulated paired isoforms showing expression, including *COX5A* and *COX5B* that encode a subunit of cytochrome c oxidase. 
+Modulated expression of these two isoforms allows *S. cerevisiae* to produce holoenzymes with different catalytic properties in response to oxygen [@burke1998structure].
+*COX5A* expression declines between 5-1 umol/L O~2~, and is undetectable below *0.25* umol/L O~2~ while *COX5B* is undetectable until *0.25* umol/L O~2~ [@kwast1998oxygen]. 
+Simultaneous induction of both transcripts at the end of fermentation is again consistent with a gradient of dissolved oxygen in fermentation [@moenne2014oxygen].
+In contrast, of the oxygen-regulated isoform pair *CYC1* and *CYC7* [@kwast1998oxygen], we only detected expression of the hypoxic isoform *CYC7* at the end of fermentation. 
+The break point between expression of isoforms occurs at a higher concentration of 0.5 umol/L O~2~ for *CYC1*/*CYC7* than *COX5A*/*COX5B* [@kwast1998oxygen], which many indicate that dissolved oxygen levels did not exceed 0.5 umol/L and therefore were not permissive to expression of *CYC1*. 
+
+In late fermentation, we also observed induction of pathways like glycerol degradation and proline metabolism that require oxygen. 
+Glycerol is a compatible solute involved in combating osmotic stress and redox balance and is primarily produced in early fermentation [@Remize2003]. 
+We found induction of *GCY1* which encodes a glycerol catabolic enzyme used in micro aerobic conditions [@Jung2012], as well as *RSF2*, a transcriptional regulator of genes that encode proteins required for glycerol-based growth. 
+Proline metabolism genes *PUT1*, *PUT2*, and *PUT4* were also induced at the end of fermentation. 
+Although proline is the most abundant amino acid in grape must, it is the least-preferred alternative nitrogen source of laboratory yeast and requires oxygen to be metabolized [@KLIEWER1970]. 
+@rossignol2003genome have further observed that *PUT1* and *PUT2* were induced in a sealed laboratory wine fermentation, but that proline was not metabolized given the absence of oxygen. 
+Expression of *PUT1*, *PUT2*, and *PUT4* is regulated by nitrogen catabolite repression [@terSchure2000] and the presence of proline in the absence of other nitrogen sources [@Huang2000], but is not regulated by the presence of oxygen. 
+Intracellular proline accumulation also protects *S. cerevisiae* from reactive oxygen species associated with ethanol-rich environments [@Takagi2016]. 
+While it possible that glycerol and proline were metabolized in late fermentation with oxygen, other processes like nutrient limitation and oxidative stress may also explain the induction of these genes.
+
+Taken together, our gene expression data is consistent with a distributed gradient of oxygen (hypoxia and anoxia) in the fermentation environment that induces varied gene expression across the cell population. 
+In the future, single cell sequencing technologies combined with continuously monitored dissolved oxygen assays may help resolve these questions. 
+From a production perspective, in industrial fermentations, even those that employ pump over systems and therefore maintain mixing and homogeneity, there is a gradient of dissolved oxygen in the fermentation tank wherein oxygen concentration is higher toward the top of the vessel [@moenne2014oxygen]. 
+This suggests that heterogeneous gene expression profiles in response to oxygen would likely exist in these environments too. 
+This is also an important fact to consider, as oxygen additions during fermentation are known to influence both fermentation and sensory outcomes. 
+For example, in late fermentation, a single oxygen pulse increases the rate of fermentation mediated by ergosterol biosynthesis [@rosenfeld2003oxygen].
+Similarly, oxygen additions at different stages of fermentation differentially impact wine aroma compound formation like volatile thiols and esters, however this appears to occur in a strain-dependent manner (reviewed in @tarko2020impact).
+This knowledge, combined with the impact of oxygen addition on fermentation outcomes, raises the idea that timely addition of oxygen may be a tool to control speed of fermentations and formation of wine aromas. 
+
+### Mitochondria and fermentation
+
+In late fermentation, we observed a striking enrichment of pathways involved in mitochondrial biogenesis and function, as well as oxidative phosphorylation (**Figure \@ref(fig:brixfig2)B**, **Figure \@ref(fig:enrichmentrepgo)**, **Figure \@ref(fig:enrichmentrepkegg)**). 
+Substantial metabolic investment in mitochondrial systems suggests a critical role of mitochondria in late fermentation, but the function of that role is unclear. Limited research has been conducted on the mitochondria during enological fermentation, likely because of both low oxygen conditions and the Crabtree effect wherein yeast participate in fermentative metabolism in the presence or absence of oxygen (reviewed in @o1996mitochondrial and @kitagaki2014mitochondrial).
+While some studies that profile the transcriptome of primary fermentation either find no evidence for or make no comment on enrichment for oxidative metabolism at the end of fermentation, many studies have found induction of mitochondrial genes, particularly those encoding oxidative phosphorylation. 
+This includes fermentations conducted under nitrogen limitation [@mendes2007transcriptional], lipid limitation [@zara2019transcriptomic], and standard laboratory conditions [@marks2008dynamics]. 
+Interestingly, under lipid limitation, oxidative phosphorylation was induced in the exponential phase of growth as opposed to the end of fermentation [@zara2019transcriptomic]. 
+Given the role of membrane lipid composition in combating ethanol-induced membrane permeability [@zeng1993effects], and the accumulation of reactive oxygen species during ethanol stress [@landolfo2008ros], induction of the respiratory chain may mitigate reactive oxygen species that are abundant at the end of fermentation. 
+Nonetheless, the recurrence of these gene expression patterns suggests that investment in mitochondrial systems is conserved across diverse fermentation environments.
+
+One potential reason for induction of mitochondrial systems is that glucose-limitation relieves the Crabtree effect and shunts cellular resources toward oxidative phosphorylation to generate the largest amount of ATP per unit of glucose [@molenaar2009shifts]. 
+In this way, an investment in mitochondrial infrastructure in late fermentation may be a starvation adaptation in which *S. cerevisiae* uses oxidative phosphorylation to harness the largest fraction of energy possible from remaining carbohydrate sources. 
+However, this strategy is predicated on availability of molecular oxygen, as minute quantities of dissolved oxygen are required for induction and function of the respiratory apparatus [@wimpenny1969effect; @somlo1965necessity].
+A second reason for mitochondrial gene expression may be related to the fact that meiosis and sporulation related genes were enriched at the end of fermentation (**Figure \@ref(fig:brixfig2)C**, **Figure \@ref(fig:enrichmentrepgo)**, **Figure \@ref(fig:enrichmentrepkegg)**).
+Induction of meiosis likely occurrs as nutrients are depleted and stress increases to produce spores resistant to these challenges [@pammer1992dit101]. 
+Interestingly, mitochondrial biomass is a predictor for meiosis [@arguello2018integration], and components of the respiratory chain are required for initiation of sporulation [@zhao2018role], providing another potential process that may underlie mitochondrial investment in late fermentation.
+Related to this, a propensity for yeast to undergo meiosis at this stage of vinification underlies fast adaptive genomic evolution of *S. cerevisiae* [@sipiczki2011diversity], suggesting this may be an important acquired trait that allows yeast to successfully survive the wine environment.
+Mitochondria also fulfill other critical roles in fermentation unrelated to respiration. For example, mitochondria play a role in sterol uptake and transport under strictly anaerobic conditions [@reiner2006genomewide], and mitochondria quench reactive oxygen species especially during ethanol stress [@perez2013reactive].
+While we did not observe induction of specific genes related to sterol biology and found induction of different genes related to reactive oxygen species than those previously identified (see next section), these processes may also be linked to increased mitochondrial gene expression.
+Regardless of the role played by mitochondria in late fermentation, the striking and consistent induction of these genes in fermentations signals that more research is needed to understand the role of mitochondria in fermentation.
+
+### Thioredoxins and glutathione system activity throughout fermentation
+
+Cycles of oxidation and reduction underlie many metabolic reactions in fermentation, for example catabolism of acetaldehyde to ethanol or acetate. 
+Redox homeostasis is maintained within cells for continued metabolism by balancing pools of reduced and oxidized pyridine nucleotide cofactors (NAD+/H, NADP+/H). 
+During oxidative stress, this homeostasis is disturbed by reactive oxygen species (ROS) leading to direct or indirect ROS-mediated damage of nucleic acids, proteins, and lipids. 
+While typically associated with respiratory metabolism, ROS can be generated throughout fermentation, in particular superoxide anions and peroxides [@landolfo2008ros; @bridi2015monitoring; @maslanka2020linkage]. 
+ROS may also be created by acetaldehyde, an intermediate in ethanol production [@matsufuji2013novel]. 
+
+In early fermentation, we found evidence for maintenance of redox balance and mitigation of oxidative stress via the thioredoxin and glutathione systems. 
+In particular, we saw induction of genes involved in the thioredoxin system (*TRX1*, and *TRR1* in 2017).
+The thioredoxin system is integral to diverse cellular metabolic processes involving reversible disulfide formation (reviewed in @toledano2013functions). 
+Induced targets of *TRX1* included *RNR1*-*RNR4*, genes encoding ribonucleotide-diphosphate reductase required for DNA synthesis and cell cycle progression [@koc2006thioredoxin], as well as *MET16*, which encodes an enzyme required for sulfate assimilation [@muller1991thioredoxin]. 
+We further observed genes encoding Trx1 target peroxidases (*TSA1*) and peroxiredoxins (*AHP1*) constitutively expressed throughout fermentation along with superoxide dismutases (*SOD1*, *SOD2*). 
+An  additional source of ROS are peroxisomes, which may generate hydrogen peroxide in early fermentation via beta-oxidation of fatty acids. We observed both *CTA1*, which encodes a peroxisomal catalase, and *ANT1*, which encodes a peroxisomal transporter involved in beta-oxidation of fatty acids, induced in early fermentation.
+
+One factor used to maintain redox balance is NADPH, which provides reducing potential for the thioredoxin system. 
+It has been shown that metabolic intermediates in glycolysis can be re-routed to the pentose phosphate pathway to generate NADPH in response to oxidative stress [@shenton2003protein; @deponte2017incomplete; @ralser2007dynamic]. 
+We found that the pentose phosphate pathway was enriched among genes induced in early fermentation **Figure \@ref(fig:brixfig2)C**, **Figure \@ref(fig:enrichmentindgo)**, **Figure \@ref(fig:enrichmentindkegg)**, which includes *GND1*, an enzyme that catalyzes NADPH regeneration and is required for the oxidative stress response.
+Induced genes that encode enzymes acting downstream of *GND1* in the pentose phosphate pathway included *RPE1*, *TLK1*, *TLK2*, and *TAL1*. 
+To re-route carbon from glycolysis to the pentose phosphate pathway, the glycolytic enzyme glyceraldehyde-3-phosphate dehydrogenase may be modified through the reversible binding of glutathione in a process called glutathionylation.
+Glutathionylation is reversed by thioredoxins Trx1 and Trx2 in *S. cerevisiae* [@greetham2010thioredoxins]. 
+Glutathione is an abundant tripeptide conserved throughout eukaryotic and prokaryotic cells, but its physiological role is both diverse and debated (review in @deponte2017incomplete). 
+Regardless, while glutathione concentrations are high in *S. cerevisiae*, the concentration of this metabolite may be dynamically regulated in early fermentation; we observed that genes encoding enzymes involved in the degradation (*DUG1* and *DUG2*), import (*OPT1*), and biosynthesis (*GSH1* and *GSH2* in the 2017 vintage) of glutathione were induced in early fermentation. 
+Additional generation of NADPH in early fermentation may be supported by the transformation of isocitrate to alpha ketoglutarate via *IDP1* in the mitochondria, and export via *YMH2*, as both genes were also induced.
+Genes encoding aldehyde dehydrogenases *ALD5* and *ALD6* are similarly induced in early fermentation, both of which may regenerate NADPH through the transformation of acetaldehyde to acetate. *ALD6* is the dominant isoenzyme responsible for acetate production in wine [@saint2004functional].
+
+We further observed induction of genes involved in glutathione-mediated ROS mitigation in late fermentation. 
+For example, a gene encoding cytosolic glutaredoxin (*GRX1*) was induced in late fermentation. 
+Unlike glutaredoxins in other species (e.g. mammals), yeast glutaredoxins do not function as deglutathionylase enzymes [@greetham2010thioredoxins]. 
+Instead, induction of *GRX1* increases resistance to hydroperoxides by catalytically reducing hydroperoxides through glutathione conjugation and using the reducing power of NADPH [@collinson2002yeast]. 
+In addition, the cytosolic peroxidase *GPX1* was induced. 
+*GPX1* uses both glutathione and thioredoxin (in combination with NADPH) for reducing power [@ohdate2010kinetics]. 
+*GPX1* is known to be induced by glucose and nitrogen starvation [@ohdate2010regulatory], which coincides with peak peroxide formation in yeast during wine fermentation [@bridi2015monitoring]. 
+While our gene expression data support a role for cytoplasmic glutathione during late fermentation, genes encoding mitochondrial peroxidin (*PRX1*) and thioredoxin (*TRX3*) were also induced. 
+Prx1 buffers the mitochondria from oxidative stress and is reductively protected by glutathione, thioredoxin reductase (Trr2), and Trx3 [@greetham2009antioxidant]. 
+Taken together these results suggest that cytoplasmic and mitochondrial systems may be integral to combating increased oxidative stress at the end of fermentation through the reducing power of glutathione and NADPH.
+
+Glutathione is also important for maintenance of cellular function via other systems. 
+For example, methylglyoxal is a byproduct of glycolysis, a reduced derivative of pyruvic acid, that may account for up to 0.3% of glycolytic carbon flux in *S. cerevisiae* [@martins2001situ].
+We found that *GLO2*, an enzyme that catalyzes methylglyoxal degradation, was induced in late fermentation. 
+The catabolic action of *GLO2* is dependent on the presence of glutathione. Genes encoding glutathione-independent systems involved in the degradation of methylglyoxal were also induced in late fermentation (*GRE2*/*GRE3*). 
+Genes that encode proteins involved in glutathione homeostasis were also induced at the end of fermentation. 
+*GEX1* encodes a proton:glutathione antiporter [@dhaoui2011gex1; @cordente2015unravelling], which is induced during oxidative stress [@dhaoui2011gex1], and modulates formation of the aromatic thiol 3-mercaptohexan-1-ol from its glutathionylated precursor in wines such as Sauvignon Blanc [@cordente2015unravelling]. 
+Conversely, we also saw induction of a gene that encodes an enzyme that cleaves gluthione (*GCG1*) that may be involved in apoptotic signaling via ROS accumulation [@kumar2012mammalian].
+
+Together, these gene expression patterns, highlight how intertwined redox homeostasis is with almost all core metabolic processes in *S. cerevisiae*, as most pathways require oxidation or reduction by a pyridine nucleotide cofactor during at least one reaction. 
+NAD+/H and NADP+/H participate in 740 and 887 biochemical reactions through interactions with 433 and 462 enzymes, respectively [@chen2014engineering]. 
+It is also well documented that experimental perturbation of both NAD+/H and NADP+/H leads to changes in aroma compounds in wine and other fermented beverages [@farina2012redox; @bloem2016metabolic; @xu2019engineering; @xu2019higher]. 
+The observations presented herein conserved across many Pinot noir fermentations involving redox balance and mitigation of oxidative stress via the thioredoxin and glutathione systems offer further evidence for the importance of these systems and motivation for future study in the context of wine aroma profiles.
+
+### Stress-induced gene expression compared to other stress responses
+
+During fermentation, *S. cerevisiae* has to adapt to a continually changing stress landscape. 
+Macro and micronutrients become limiting as ethanol concentrations increase, and, as discussed above, production of acetaldehyde and other metabolic processes generate oxidative stress. 
+To accommodate this dynamic environment, *S. cerevisiae* expresses genes that overlap with, but are distinct from, the stress response of laboratory yeast [@gasch2000genomic; @causton2001remodeling]. 
+In accordance with previous studies [@rossignol2003genome; @marks2008dynamics], we found partial overlap between genes induced in fermentation and those involved in the environmental stress response (ESR) in laboratory yeast. 
+We found 16 ESR genes induced at the beginning of fermentation and 78 ESR genes induced at the end of fermentation. 
+This matches observations in synthetic must where stress genes were induced upon entry into stationary phase [@rossignol2003genome]. 
+Stress-related genes induced at the beginning of fermentation were enriched for Gene Ontology pathways involving carbohydrate transmembrane transport (mannose, fructose, glucose, hexose) and NADP regeneration, while stress-related genes induced at the end of fermentation were enriched for oxidation-reduction process, generation of precursor metabolites and energy, energy reserve metabolic process, and glycogen metabolic process (**Figure \@ref(fig:brix_fig3)**).
+
+```{r brix_fig3, echo = F, warning=F, message=F, fig.cap="Pathways enriched among genes that induced in early or late fermentation that are shared with the environmental stress response (ESR). **A)** Of 16 genes that overlap with the ESR and were induced in early fermentation, pathways related to carbohydrate metabolism were enriched. **B** Of 78 genes that overlap with the ESR and were induced in later fermentation, pathways related to oxidation-reduction and carbohydrate metabolism were enriched."}
+knitr::include_graphics("figure/brix_fig3.pdf")
+```
+
+A recent study investigated fermentation of Riesling grape must at laboratory scale without addition of oxygen [@marks2008dynamics].
+Using microarray analysis at five time points in fermentation, the authors defined a fermentation stress response (FSR) as those genes that are induced at any point in fermentation and do not return to baseline [@marks2008dynamics].
+The FSR is differentiated from the ESR and common stress response because adaptation is not observed over time through genes returning to pre-stress transcription levels [@marks2008dynamics; @gasch2000genomic; @causton2001remodeling].
+Of the 223 genes induced in the FSR, we find that 84 were induced in mid- or late- fermentation. Of these 84 genes, 43 overlap with genes expressed in other stress responses as defined by @marks2008dynamics, including 16 with the ESR and 14 with the common stress response.
+Of the 41 genes that overlap with the FSR, many were related to the challenging nutrient environment in wine, including glucose limitation (*NRG1*, *SKS1*, *HXT6*, *VID24*), nitrogen limitation (*MEP2*, *GAP1*, *PTR2*, *AVT4*, *VBA2*), vitamin limitation (*MCH5*, *VHR1*), and stress caused by heat, salt, protein mis-folding, and cell wall defects (*GAC1*, *RPI1*, *JID1*, *PSR2*).
+This suggests that multiple stress pathways are simultaneously activated by the challenging environment that *S. cerevisiae* encounters in wine fermentation, rather than this being a part of a specific fermentation stress response.
+Many genes identified in the FSR, and induced in this study during fermentation, remain uncharacterized (YPR152C, YBR085C-A, YDL024C, YDR042C, YMR244W, YLL056C), offering interesting areas of future investigation.
+
+### Polyol metabolism in late fermentation
+
+Polyols, also called sugar alcohols, have recently been shown to be produced by non-*Saccharomyces* yeasts [@mbuyane2018torulaspora], in addition fructophilic lactic acid bacteria, such as *Lactobacillus kunkeei*, produce mannitol from fructose to regenerate NAD+ during anaerobic fermentation [@endo2009isolation]. 
+Combined with other compounds produced by spoilage organisms, these compounds can have a significant impact on wine quality (reviewed in @du2000microbial).
+Mannitol is a non-preferred sugar that can nevertheless be metabolized by *S. cerevisiae* [@Quain1987; @Jordan2016; @ramakrishnan2016inter].
+In *S. cerevisiae*, it was found that transporters encoded by *HXT13* and *HXT15-17* facilitate mannitol and sorbitol transport [@Jordan2016]. 
+In our data, we observed induction of the mannitol transporter *HXT13* in both vintages, along with the mannitol dehydrogenase *MAN2*, which together indicate that mannitol may be present and metabolized by *S. cerevisiae* at the end of fermentation (**Figure \@ref(fig:mannitol)**).
+In line with this, although we performed eukaryotic transcriptional profiling via 3’ Tag sequencing (see methods), we detected *L. kunkeeii* transcripts in some fermentations, which may be the source of mannitol production. 
+Our data raises the possibility of mannitol reconsumption by *S. cerevisiae*, demonstrating metabolic flexibility for carbon consumption in late fermentation. 
+
+Notably, *L. kunkeei* can influence *S. cerevisiae* metabolism beyond expression of genes for non-preferred carbon sources. 
+Via production of acetic acid, and possibly other compounds, *L. kunkeii* has been shown to induce the [GAR+] prion phenotype in *S. cerevisiae* and thereby shifts carbon metabolism away from exclusive consumption of hexoses like glucose and fructose [@brown2009heritable; @jarosz2014cross]. 
+Given that we detected the presence of *L. kunkeii* RNA in the 2017 vintage, we tested for the presence of the [GAR+] phenotype in the 2019 vintage via cell culture @jarosz2014cross]. 
+We did not detect the presence of the [GAR+] prion in any fermentation tested in the 2019 vintage. 
+While the absence of the [GAR+] phenotype in the 2019 vintage does not preclude its presence in the 2017 vintage, consistent gene expression for mannitol transport and degradation at the end of fermentation in both vintages suggests that *S. cerevisiae* is metabolizing mannitol in these Pinot noir fermentations. 
+
+```{r mannitol, echo = F, warning = F, message = F, fig.cap = "Normalized log gene expression counts for genes that encode mannitol transport and degradation, HXT13 and MAN2, in the **A, B** 2017 and **C, D** 2019 vintages. *MAN2* and *HXT13* were the top most induced genes at the end of fermentation in 2019, and only fell behind *HXT4* in the 2017 vintage. Grey lines indicate a linear model fit to normalized counts."}
+knitr::include_graphics("figure/brix_mannitol-1.pdf")
+```
+
+### Vintage-specific differences
+
+From our data analyses, there are 717 genes and 375 genes that are uniquely differentially expressed in the 2017 and 2019 vintages, respectively. 
+The majority of these genes were members of pathways that were enriched among all fermentations (**Figure \@ref(fig:brixfig2)C**, **Figure \@ref(fig:enrichmentindgo)**, **Figure \@ref(fig:enrichmentrepkegg)**). 
+Using Gene Ontology enrichment analysis, no molecular function, cellular compartment, or biological process was enriched in either vintage that was not also enriched in both vintages. 
+This suggests these differences may be due to sequencing depth or variations in the gene expression within these pathways, not differences in the overall biology of *S. cerevisiae*. 
+However, we did see signatures indicative of vintage-specific effects, some of which may impact the sensory attributes of wine. 
+For example, glycerol is an important fermentation byproduct that can contribute to the mouth feel of wine [@nurgel2005contribution]. 
+*S. cerevisiae* uses glycerol biosynthesis to generate NAD+, a required cofactor for glycolysis, when NAD+ levels are not sufficiently replenished through fermentation [@ansell1997two]. 
+During glycerol biosynthesis, enzymes encoded by *GPD1* and *GPD2* convert dihydroxyacetone phosphate into glycerol-3-phosphate [@remize2001glycerol]. 
+Both *GPD1* and *GPD2* were induced in early fermentation in the 2017 vintage, but not in the 2019 vintage. 
+A second example involves genes that encode fluoride transporters Fex1 and Fex2, which were induced in late fermentation in the 2019 vintage. 
+Fluoride is a toxic anion that *S. cerevisiae* exports via two plasma membrane transporters to avoid cell damage [@Smith2015], which in excess can cause slow or stuck fermentation [@clayton1997fluoride]. 
+Although fluoride is ubiquitous in terrestrial and aquatic environments  [@Smith2015], application of the insecticide Cryolite, which contains fluoride, has caused problematic fermentations in California vineyards [@clayton1997fluoride].
+Currently, the reasons for these gene specific expression patterns is not known.
+
+Interestingly, we also observed genes of unknown function that were different between vintages. 
+Using a log~2~ fold change cut off of two, 14 genes in the 2017 vintage and seven genes in the 2019 vintage were of unknown function. 
+Across both vintages, more genes of unknown function were induced in late fermentation than in early fermentation (10 in 2017, 5 in 2019).
+The prevailing stressful, nutrient-limited conditions, combined with the knowledge of specific pathways induced in late fermentation through this work and others, may offer clues as to the functions of these genes prompting further investigation.
+
+## Conclusion
+
+In this study, we conducted 40 pilot-scale of California Pinot noir wine using grapes from 10 vineyards and two vintages. 
+The fermentations were diverse with different kinetics, initial chemical conditions, and microbial communities (Chapter [3](#chp-site)). 
+Yet even amongst this diversity, we detected a consistent gene expression program by *S. cerevisiae* that is largely consistent with that observed at laboratory scale [@rossignol2003genome; @marks2008dynamics; @rossouw2012effect]. 
+The largest deviations from benchtop fermentations may be attributable to activities of non-Saccharomyces organisms, but more research is needed to understand these complex ecological interactions and their impact on fermentation. 
+The signature of oxygen presence and metabolic availability also warrants further research, in particular into the role of the mitochondria in late fermentation as we and others have observed profound metabolic investment in these systems that is currently not well understood [@mendes2007transcriptional; @marks2008dynamics; @zara2019transcriptomic]. 
+While we detected few vintage-specific differences between fermentations, we expect there may be vineyard-site specific deviations from the consistent patterns of gene expression described herein.
+Given that there are many genes consistently expressed across these Pinot noir fermentations from diverse vineyards, these core wine fermentation genes represent strong candidates for future study to impact wine outcomes, e.g. through manipulating redox balance [@farina2012redox; @bloem2016metabolic; @xu2019engineering; @xu2019higher]. 
+Future work is also needed to extend these observations to other grape varieties and *S. cerevisiae* wine strains, which will define both the shared and unique facets of the core gene expression program in *S. cerevisiae* linked to these variables.
+
+## Methods
+
+### Grape preparation and fermentation
+
+The wine making protocol has been described previously [@cantu2020investigating; @grainger2020vineyard], but the relevant parts are reproduced with some added details below.
+The grapes used in this study originated from 10 vineyards in six American Viticulture Areas in California.
+All grapes were Pinot noir clone 667 rootstock 101-14. 
+We harvested grapes at approximately 25 brix and transported the fruit to University of California, Davis Pilot Winery for fermentation.
+We performed separate fermentations for grapes from each site, with two fermentations for each site, for a total of 20 fermentations per vintage.
+After harvest, we separated the fruit into half ton microbins on harvest day and added Inodose Inodose SO^2^ to 40 ppm.
+We then moved the bins into a 14C cold room until we destemmed the fruit and divided it into temperature jacket controlled tanks.
+We performed N~2~ sparging of the tank headspace prior to fermentation, and tanks were sealed with a rubber gasket.
+We performed a cold soak at 7C for three days and adjusted TSO~2~ to 40 ppm on the third day.
+After three days, we increased the fermentation temperature to 21C and programmed pump over frequency to hold the tank at a constant temperature.
+We rehydrated *S. cerevisiae* RC212 with Superstart Rouge at 20 g/hL and inoculated fermentations with 25 g/hL of yeast.
+Approximately 24 hours after inoculation, we adjusted nitrogen content in fermentations using DAP using the formula `(target YAN - 35 mg/L - initial YAN)/2`, and Nutristart using 25 g/hL. 
+We only adjusted nitrogen if target YAN was below 250 mg/L.
+Approximately 48 hours after fermentation, we increased the fermentation temperature to 27C and again added DAP using the formula `(target YAN - 35 mg/L - initial YAN)/2`.
+We ran fermentations to completion, when brix < 0. 
+We sampled fermentations for brix and RNA at 16 hour, 64 hours, and 112 hours relative to inoculation. 
+We performed a ten minute pump over prior to sampling each tank. 
+For RNA samples, we sampled 12 mL of wine and centrifuged at 5000 rpm for 5 minutes . 
+We discarded the supernatant and froze the pellet in liquid nitrogen, and then stored samples at -80C until RNA extraction. 
+
+### RNA extraction and sequencing
+
+We extracted RNA using the Quick RNA Fungal/Bacterial Miniprep kit including DNAsel column treatment (cat#R2014, Zymo Research). 
+We eluted samples in 30 uL of molecular grade water and used 20 uL for sequencing.
+We used 3'-Tag-Sequencing single-end sequencing (Lexogen QuantSeq).
+In the 2019 vintage, we used UMI barcodes.
+The University of California, Davis DNA Technologies Core performed all library preparation and sequencing. 
+
+### Differential expression analysis
+
+We preprocessed samples according to manufacturer recommendations. 
+First, we hard-trimmed the first 12 base pairs from each read and removed Illumina TruSeq adapters and poly A tails.
+Next, we used STAR to align our reads against *S. cerevisiae* S288C genome (R64, GCF_000146045.2) with parameters `--outFilterType BySJout --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverLmax 0.6 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMattributes NH HI NM MD --outSAMtype BAM SortedByCoordinate` [@dobin2013star].
+For the 2019 vintage, we used UMI tools to deduplicate alignments [@smith2017umi].
+We then quantified reads mapping to each open reading frame using htseq count [@anders2015htseq].
+We imported counts into R and filtered to mRNA transcripts.
+To prepare for differential expression, we used the edgeR functions `filterByExpr` and `calcNormFactors` with default parameters [@robinson2010edger].
+We used limma for differential expression, building a model using brix values, preparing the data for linear modelling with the `voom` function, and building a linear model for each gene with `lmFit` [@limma2015].
+We considered any gene with an adjusted p value < 0.05 as significant. 
+To combat batch effects from different library preparation techniques used in the 2017 and 2019 vintages, we performed differential expression separately on counts from each vintage. 
+We took the union of induced and repressed genes between vintages, respectively, to generate the final set of differentially expressed genes.
+We visualized induced and repressed genes using proteomaps [@liebermeister2014visual], and visualized the intersection of differentially expressed genes between vintages using the R package ComplexUpset (https://github.com/krassowski/complex-upset).  
+We performed gene set enrichment analysis for genes that were induced and repressed in both vintages against the Gene Ontology (`ont = "ALL"`) and Kyoto Encyclopedia of Genes and Genomes (`organism = "sce"`) databases using the R package clusterProfiler [@yu2012clusterprofiler].
+
+### Detection of *Lactobacillus kunkeii* in RNA sequencing reads
+
+3' Tag sequencing sequences the tail-end of transcripts that contain poly(A) tails.
+The majority of transcripts with poly(A) tails are eukaryotic in origin, but given that bacteria perform polyadenylation as a degradation signal [@rorbach2014polyadenylation], a very small subset of transcripts may also originate from bacteria.
+We identified *Lactobacillus kunkeei* in RNA-seq reads using sourmash `gather` [@brown2016; @pierce2019].
+Using all *L. kunkeei* genomes available in GenBank (08/06/2019), we generated sourmash signatures for each using a k-mer size of 31 and a scaled value of 100. 
+We then used sourmash `index` to generate a database of *L. kunkeii* genomes, and queried this database using signatures of each RNA-seq sample. 
+To validate findings from sourmash `gather`, we used BWA `mem` with default parameters to map a subset of samples against the best matching *L. kunkeei* genome [@li2013aligning]. 
+
+### Culturing *Saccharomyces cerevisiae* for [GAR+] prion detection
+
+To ascertain whether the [GAR+] prion state was detectable in wine fermentations, we cultured yeast for the prion as performed in @jarosz2014cross.
+We used yeast peptone-based medium containing the designated carbon source, such as YPD (1% yeast extract, 2% peptone, 2% agar, 2% glucose); YP glycerol (1% yeast extract, 2% peptone, 2% agar, 2% glycerol) or GGM (1% yeast extract, 2% peptone, 2% agar, 2% glycerol, 0.05% D-[+] glucosamine hydrochloride). 
+We inoculated yeast from fermentations into each well of a 96 well plate containing 200ul liquid YPD + 34ug/ml chloramphenicol, and then grew yeast at 30C for 48 hours.
+We then pinned yesat to YPglycerol or GGM plates and grew at 30C for four days.
+
+### American viticulture area map construction
+
+We constructed the AVA map featured in **Figure \@ref(fig:brixfig1)** from the UC Davis Library AVA project [https://github.com/UCDavisLibrary/ava](https://github.com/UCDavisLibrary/ava).
+
+### Author contributions
+
+This manuscript was a collaboration by Taylor Reiter, Rachel Montpetit, Shelby Byer, Isadora Frias, Esmeralda Leon, Robert Viano, Michael Mcloughlin, Thomas Halligan, Desmon Hernandez, Kerri Steenwerth, Ron Runnebaum, and Ben Montpetit.
+
+|Author|Contributions|
+|---|---|
+|TER| Data Collection; Conceptualization; Formal Analysis; Methodology; Visualization; Writing - Original Draft; Writing - Review and Editing |
+|RM | Data Collection |
+|SB | Data Collection |
+|IF   | Data Collection |
+|EL   | Data Collection |
+| RV  | Data Collection |
+| MM  | Data Collection |
+| TH  | Data Collection |
+| DH  | Data Collection |
+|KS   | Data Collection; Conceptualization |
+|RR | Conceptualization; Funding Acquisition |
+|BM | Conceptualization; Funding Acquisition; Writing - Original Draft; Writing - Review and Editing |
+
+
+```{r enrichmentindgo, echo = F, message = F, warning = F, fig.cap="Significantly enriched Gene Ontology (GO) pathways in early fermentation. Pathways from GO categories molecular function, cellular component, and biological process are represented. Significant pathways are defined as p < 0.05 after Bonferroni p value correction."}
+knitr::include_graphics("figure/brix_enrichmentindgo-1.pdf")
+```
+
+```{r enrichmentrepgo,  echo = F, message = F, warning = F, fig.cap="Significantly enriched Gene Ontology (GO) pathways in late fermentation. Pathways from GO categories molecular function, cellular component, and biological process are represented. Significant pathways are defined as p < 0.05 after Bonferroni p value correction."}
+knitr::include_graphics("figure/brix_enrichmentrepgo-1.pdf")
+```
+
+```{r enrichmentindkegg,  echo = F, message = F, warning = F,fig.cap="Significantly enriched KEGG pathways in early fermentation. Significant pathways are defined as p < 0.05 after Bonferroni p value correction."}
+knitr::include_graphics("figure/brix_enrichmentindkegg-1.pdf")
+```
+
+```{r enrichmentrepkegg, echo = F, message = F, warning = F, fig.cap="Significantly enriched KEGG pathways in late fermentation. Significant pathways are defined as p < 0.05 after Bonferroni p value correction."}
+knitr::include_graphics("figure/brix_enrichmentrepkegg-1.pdf")
+```

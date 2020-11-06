@@ -1,0 +1,23 @@
+﻿Process,Gene,Product
+Nitrogen limitation,"GAT1, DAL80","Transcriptional activator (GAT1) and repressor (DAL80) of genes under nitrogen catabolite repression. Expression is inversely correlated, and the detection of both genes as induced in late fermentation likely indicates tight transcriptional regulation of nitrogen metabolism."
+Nitrogen limitation,"DAL2-DAL5, DAL80, DAL82",Catalyze allantoin degradation and expression is under nitrogen catabolite repression.
+Nitrogen limitation,MEP2,Ammonia permease and expression is under nitrogen catabolite repression.
+Nitrogen limitation,GAP1,Amino acid permease.
+Nitrogen limitation,PTR2,Peptide permease.
+Nitrogen limitation,"AVT3, AVT4",Vacuolar amino acid exporters that mobilize internal nitrogen stores for cell maintenance during stationary phase. Expression is under nitrogen catabolite repression.
+ubiquitin-mediated sel. protein degrad.,RPN4,Transcription factor that induces expression of proteasome genes.
+ubiquitin-mediated sel. protein degrad.,TMC1,"Effector of proteotoxic stress induced by nitrogen limitation, weak acid, and misfolded proteins. Target of RPN4."
+ubiquitin-mediated sel. protein degrad.,"UBC8, VID24","Negative regulators of fructose-1,6-bisphosphate through ubiquitination (UBC8) and vacuolar targeting (VID24)."
+ubiquitin-mediated sel. protein degrad.,"UBC1, UBC5, UBC7, UBC13",Ubiquitin conjugating enzymes.
+ubiquitin-mediated sel. protein degrad.,"UBI4, CUZ1",Involved in the ubiquitin-proteasome pathway.
+Autophagy,"ATG2, ATG4, ATG7-ATG12, ATG14, ATG32, ATG40",Proteins involved in autophagy. Autophagy is a key response to nutritional limitation that allows cells to maintain homeostasis (ref:Cebollero2009). Nitrogen starvation leads to the largest autophagic response in yeast.
+Erlich pathway,GRE2,Final step of pathway where fusel aldehydes are oxidized or reduced into fusel acids or alcohols (ref:hazelwood2008ehrlich).
+Carbon limitation,SNF3,Plasma membrane low glucose sensor involved in regulating glucose transport
+Carbon limitation,SKS1,Serine/threonine kinase involved in the adaptation to low glucose via *SNF3*-independent signalling
+Carbon limitation,PGM2,Phosphoglucomutase. Catalyzes a key step in hexose metabolism. Induced in response to glucose limitation and ethanol stress (ref:Alexandre2001).
+Carbon limitation,HXK1,Hexokinase that phosphorylates glucose or fructose in the first irreversible step leading to glycolysis. Under glucose-induced repression.
+Carbon limitation,"HXT4, HXT6",Hexose transporters required at the end of alcoholic fermentation.
+Trehalose and glycogen,"TSL1, NTH1, ATH1","Involved in trehalose synthesis (TSL1) and degradation (NTH1, ATH1). Trehalose acts a a storage carbohydrate for cell maintenance in non growth conditions (ref:Lillie1980; ref:Parrou1999), bolsters membrane integrity by displacing ethanol (ref:Franois2001), and protects proteins from denaturation (ref:Singer1998). Trehalose recycling is an important component of stress response (ref:Parrou1997)."
+Trehalose and glycogen,"GLG1, GSY1, GSY2, IGD1, GPH1, SGA1, GAC1, GIP1, YPI1, PIG2, GLC8","Involved in glycogen accumulation (GLG1, GSY1, GSY2, IGD1), degradation (GPH1, SGA1), and metabolism (GAC1, GIP1, YPI1, PIG2, GLC8). Glycogen accumulates during nutrient abundance and is metabolized during stationary phase and nutrient deprivation (ref:Lillie1980).Glycogen recycling is an important component of stress response (ref:Parrou1997)."
+Cell wall integrity,"PIR3, SED1, SLT2",Target genes of the cell wall response to ethanol. PIR3 is required for cell wall stability and induced in part by SLT2. SED1 is a stress-induced cell wall structural protein (SED1) (ref:Udom2019).
+Cell wall integrity,"PKH2, YPS1, PST1, KRE1",General cell wall integrity response.

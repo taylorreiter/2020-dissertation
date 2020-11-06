@@ -1,0 +1,4 @@
+﻿Wine process,Gene,Induced,Gene product function
+Glycolysis and fermentation,HXT3,late,Hexose transporter induced by both high and low glucose concentrations.
+Glycolysis and fermentation,"PFK1, PFK2",PFK2 early,"Phosphofructokinases that catalyze the first irreversible reaction specific to glycolysis, producing fructose-1,6-bisphosphate from fructose-6-phosphate."
+Glycolysis and fermentation,ADH1-ADH5,"ADH2-ADH4 early, ADH5 late",Alcohol dehydrogenase isoenzymes. Dominant fermentative alcohol is ADH1 (ref:ciriacy1975genetics). Responsible for reoxidation of NADH to NAD+ which is a required cofactor in the metabolism of glyceraldehyde-3-phosphate in glycolysis. ADH2 is a non-dominant isoenzyme of alcohol dehydrogenase. Typically repressed by glucose and converts ethanol to acetaldehyde (ref:ciriacy1975genetics). Overexpressed in some wine strains (ref:zuzuarregui2006transcriptomic).

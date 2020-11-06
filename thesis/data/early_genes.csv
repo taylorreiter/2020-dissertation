@@ -1,0 +1,16 @@
+﻿Process,Gene,Product
+Glycolysis and fermentation,HXT1,Low affinity hexose transporter.
+Glycolysis and fermentation,HXK2,Hexokinase that phosphorylates glucose in the first irreversible step leading to glycolysis.
+Glycolysis and fermentation,"PFK1, PFK2","Phosphofructokinases that catalyze the first irreversible reaction specific to glycolysis, producing fructose-1,6-bisphosphate from fructose-6-phosphate"
+Acetate metabolism,ALD4-6,Aldehyde dehydrogenase isoenzymes that produce acetate as a byproduct when acetaldehyde is metabolized. ALD6 encodes the main isoenzyme responsible for acetate production in wine (ref:saint2004functional). Aldehyde dehydrogenase isoenzymes ALD4 and ALD5 are expressed when ethanol is the carbon source and are not typically associated with wine fermentation. Acetate contributes the majority of volatile acidity associated with negative organoleptic properties in wine (ref:curiel2016identification).
+Acetate metabolism,PDR12,"Plasma membrane ABC transporter. Required for development of resistance to weak organic acids, including acetate (ref:piper1998pdr12)."
+Cell cycle,BAT1,Expressed in logarithmic phase (ref:caro1998transcription).
+Cell cycle,CWP1,Expressed in the S/G2 phase of cell cycle (ref:caro1998transcription).
+Nitrogen metabolism,GNP1,"High-affinity glutamine permease that also transports leucine, serine, threonine, cysteine, methionine and asparagine."
+Nitrogen metabolism,MUP1,High-affinity methionine permease that is also involved in cysteine transport.
+Nitrogen metabolism,"CAR1, CAR2",Involved in arginine catabolism. Arginine is the most abundant amino acid in grape must after proline (ref:KLIEWER1970) and is used in protein synthesis during fermentation (ref:crepin2017management).
+Nitrogen metabolism,YPQ1,Vacuolar transporter for arginine and lysine. Unused arginine is stored in the vacuole for later use (ref:crepin2017management)
+Ehrlich pathway,"BAT1, ARO8","Catalyzes transamination of amino acids, the product of which cannot be redirected to central carbon metabolism and so is excreted as fusel acid or fusel alcohol (ref:hazelwood2008ehrlich). Overexpression of BAT1 increases the concentration of isoamyl alcohol, its acetate ester, and isobutanol in wine (ref:hazelwood2008ehrlich)."
+Ehrlich pathway,PDC1,Catalyzes alpha keto decarboxylation.
+Glycerol biosynthesis,GPP1,Cleaves phosphate from glycerol-3-phosphate.
+Sterol biosynthesis,"ERG2, ERG4,  ERG6-8, ERG13, ERG24, ERG27, HMG1",Ergosterol biosynthesis.

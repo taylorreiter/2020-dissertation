@@ -378,9 +378,9 @@ When we calculated distances for disparate measurement types at the same time, w
 We performed Mantel tests with the `mantel()` function in the vegan package with parameters `method = "spearman"`, `permutations = 9999`, and `na.rm = TRUE` [@oksanen2007vegan; @legendre2012numerical]. 
 We performed p value adjustment using the function `p.adjust()` with parameter `method = "fdr"`. We used a false discovery rate of p = 0.1. 
 
-###
+### Author contributions
 
-This manuscript was a collaboration by Taylor Reiter, Rachel Montpetit, Shelby Byer, Isadora Frias, Esmeralda Leon, Robert Viano, Michael Mcloughlin, Thomas Halligan, Desmon Hernandez, Kerri Steenwerth, Ron Runnebaum,  and Ben Montpetit.
+This manuscript was a collaboration by Taylor Reiter, Rachel Montpetit, Shelby Byer, Isadora Frias, Esmeralda Leon, Robert Viano, Michael Mcloughlin, Thomas Halligan, Desmon Hernandez, Kerri Steenwerth, Ron Runnebaum, and Ben Montpetit.
 
 |Author|Contributions|
 |---|---|
@@ -396,13 +396,6 @@ This manuscript was a collaboration by Taylor Reiter, Rachel Montpetit, Shelby B
 |KS   | Data Collection; Conceptualization |
 |RR | Conceptualization; Funding Acquisition |
 |BM | Conceptualization; Funding Acquisition; Writing - Original Draft; Writing - Review and Editing |
-
-
-<!-- ### Co Authors -->
-
-<!-- Shelby Byer, Isadora Frias, Esmeralda Leon, Robert Viano, Michael Mcloughlin, Thomas Halligan, and Desmon Hernandez, assisted in vinification. -->
-<!-- Rachel Montpetit performed DNA and RNA extraction and DNA library preparation, as well as collected some wine samples.  -->
-<!-- Kerri Steenwerth, Ron Runnebaum, and Ben Montpetit supervised the work. -->
 
 
 ```{r figs3, echo = F,warning=F, message = F, fig.cap = "Confusion matrices depicting accuracy of random forests models built with RNA sequencing data to predict **A)** vineyard site and **B)** vineyard region. The models depicted were trained on one vintage and validated on the other."}

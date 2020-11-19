@@ -7,7 +7,7 @@
 \end{epigraphs}
 ```
 
-With the advent of affordable sequencing technologies, microbiology has undergone an information revolution that has led to the the expansion of the tree of life by sequencing of uncultivatable bacteria [@brown2015unusual; @parks2017recovery], the discovery of prokaryotic immune systems [@mojica2005intervening], and the discovery of prokaryotic genome fluidity [@tettelin2005genome; @andreani2017prokaryote].
+With the advent of affordable sequencing technologies, microbiology has undergone an information revolution that has led to the expansion of the tree of life by sequencing of uncultivable bacteria [@brown2015unusual; @parks2017recovery], the discovery of prokaryotic immune systems [@mojica2005intervening], and the discovery of prokaryotic genome fluidity [@tettelin2005genome; @andreani2017prokaryote].
 These revolutionary discoveries were enabled not only with next generation sequencing technologies, but also by increasingly sophisticated and scalable sequencing analysis methods. 
 
 Edward DeLong set out on the Research Vessel Wecoma in the fall of 1992 and filtered 30 liters of seawater off of the Oregon coast to collect concentrated bacterioplankton^[Edward DeLong, personal communication October 2020].

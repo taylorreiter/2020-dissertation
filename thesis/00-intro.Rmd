@@ -84,4 +84,5 @@ This approach leverages all of the sequencing data and in doing so identifies co
 **Chapter 5** provides an overview and brief guide to making sequencing data analysis automated, portable, scalable, repeatible, and reproducible. 
 I used over 350,000 CPU hours to complete the projects in this disseration as well as other projects from which I draw expertise in the material presented herein. 
 These efforts were coordinated by a powerful and integrated computational framework built around workflow systems and software managers.
-The piece is written as a guide to scaling computational pipelines from a few samples to a few hundred samples and aimed at graduate students or other researchers who are expanding their sequencing analysis to large data sets.
+The piece is written as a guide to scaling computational pipelines from a few samples to a few hundred samples and aimed at graduate students or other researchers who are expanding their sequencing analysis to large data sets. 
+This manuscript was accepted for publication in GigaScience.
